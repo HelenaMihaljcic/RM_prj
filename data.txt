@@ -1,0 +1,5 @@
+Voće,Jabuka,Banana,Narandža,Kruška,Grožđe,Malina,Ananas,Breskva,Limun,Mandarina,Lubenica,Jagoda,Mango,Trešnja,Šljiva
+Države,Srbija,Njemačka,Francuska,Italija,Španija,Rusija,Kina,Japan,Brazil,Kanada,Australija,Meksiko,Argentina,Egipat,Indija
+Sportovi,Fudbal,Košarka,Tenis,Odbojka,Rukomet,Plivanje,Skijanje,Biciklizam,Atletika,Gimnastika,Stoni tenis,Golf,Džudo,Ronjenje,Karate
+Profesije,Ljekar,Učitelj,Inženjer,Advokat,Policajac,Frizer,Muzičar,Glumac,Pjevač,Plesač,Kuhar,Pilot,Arhitekta,Veterinar,Poljoprivrednik
+Životinje,Pas,Mačka,Slon,Tigrovi,Medvjed,Lav,Zebra,Zec,Ptica,Riba,Delfin,Konj,Koza,Krava,Vuk
