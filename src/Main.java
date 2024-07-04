@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -109,4 +110,8 @@ public class Main extends Application {
             System.out.println("AnchorPane za crtice ili template labela nisu pronađeni na sceni.");
         }
     }
+=======
+public class Main {
+
+>>>>>>> aeec6cc2bb3ce7cd7a8b7d5300b3b8d561df5b62
 }
