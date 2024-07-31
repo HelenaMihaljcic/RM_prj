@@ -1,5 +1,3 @@
-
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -28,7 +26,6 @@ final class ChatServer {
         try (ServerSocket server = new ServerSocket(port)) {
             System.err.println("Chat server is listening on port: " + port);
 
-            //noinspection InfiniteLoopStatement
             while (true) {
                 Socket client = server.accept();
                 System.err.println("Client connected.");
@@ -37,14 +34,20 @@ final class ChatServer {
                 UserThread user = new UserThread(client, this);
                 this.users.add(user);
                 user.start();
-
-                // Also, we cannot use try-with-resources block on client socket
-                // because it would be closed immediately after dispatching a
-                // thread. We leave the thread to close the socket.
+                notifyAllUsers();
             }
         } catch (IOException ex) {
             System.err.println("Server errored: " + ex.getMessage());
             ex.printStackTrace();
+        }
+    }
+
+    void notifyAllUsers() {
+        List<String> userNames = getUserNames();
+        synchronized (this.users) {
+            for (UserThread user : users) {
+                user.sendMessage("UPDATE_USERS " + String.join(",", userNames));
+            }
         }
     }
 
@@ -60,6 +63,7 @@ final class ChatServer {
         String username = user.getNickname();
         this.users.remove(user);
         this.privateChatRooms.values().forEach(chatRoom -> chatRoom.removeUser(user));
+        notifyAllUsers();
         System.err.println("Client disconnected: " + username);
     }
 

@@ -1,11 +1,8 @@
-
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Set;
 
 final class UserThread extends Thread {
     private final ChatServer server;
@@ -32,22 +29,17 @@ final class UserThread extends Thread {
     @Override
     public void run() {
         try {
-            // Upon connecting, read username and send connected users list
             this.username = fromUser.readLine();
             this.sendMessage("Connected users: " + this.server.getUserNames());
 
-            // Broadcast that new user has entered the chat
             this.server.broadcast(this, "New user connected: " + this.username);
 
-            // Process the user (until he leaves the chat)
             String clientMessage;
             do {
-                // Read message from user
                 clientMessage = fromUser.readLine();
                 if (clientMessage == null)
                     break;
 
-                // Handle private chat request
                 if (clientMessage.startsWith("/request ")) {
                     handlePrivateChatRequest(clientMessage.substring(9).trim());
                 } else if (clientMessage.startsWith("/accept")) {
@@ -69,16 +61,13 @@ final class UserThread extends Thread {
                 }
             } while (!clientMessage.equals("bye"));
 
-            // Broadcast that user has disconnected
             this.server.broadcast(this, this.username + " has left the chat.");
         } catch (IOException ex) {
             System.out.println("Error in UserThread: " + ex.getMessage());
             ex.printStackTrace();
         } finally {
-            // Remove user from set
             this.server.remove(this);
 
-            // Close socket
             try {
                 this.sock.close();
             } catch (IOException e) {

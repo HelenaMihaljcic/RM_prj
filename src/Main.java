@@ -1,4 +1,5 @@
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -122,6 +123,12 @@ public class Main extends Application {
     public void Connect(ActionEvent event) {
         this.chatClient = new ChatClient("localhost", 12345, this);
         this.chatClient.start(); // Start the ChatClient thread
+    }
+    public void updateUserList(String[] users) {
+        Platform.runLater(() -> {
+            igraciLV.getItems().clear();
+            igraciLV.getItems().addAll(users);
+        });
     }
 
     public String getUsername() {

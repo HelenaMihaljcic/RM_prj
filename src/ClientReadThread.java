@@ -1,5 +1,4 @@
-
-
+import javafx.application.Platform;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -8,10 +7,11 @@ import java.net.Socket;
 final class ClientReadThread extends Thread {
     private BufferedReader fromServer;
     private String username;
+    private Main main;
 
-
-    ClientReadThread(String username, Socket socket) {
+    ClientReadThread(String username, Socket socket, Main main) {
         this.username = username;
+        this.main = main;
         try {
             this.fromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         } catch (IOException ex) {
@@ -20,22 +20,26 @@ final class ClientReadThread extends Thread {
         }
     }
 
-
     @Override
     public void run() {
-        // Continuously receive and print messages from the server
         while (true) {
             try {
-                // Wait for message and print it
                 String response = this.fromServer.readLine();
                 if (response == null) {
                     System.err.println("\rConnection lost.");
                     return;
                 }
-                System.out.println("\r" + response);
 
-                // Print prompt
-                System.out.printf("\r[%s]: ", this.username);
+                if (response.startsWith("UPDATE_USERS")) {
+                    String users = response.substring(13);
+                    String[] userArray = users.split(",");
+                    Platform.runLater(() -> {
+                        main.updateUserList(userArray);
+                    });
+                } else {
+                    System.out.println("\r" + response);
+                    System.out.printf("\r[%s]: ", this.username);
+                }
             } catch (IOException ex) {
                 System.out.println("Error reading from server: " + ex.getMessage());
                 ex.printStackTrace();

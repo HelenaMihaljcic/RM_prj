@@ -23,7 +23,7 @@ public final class ChatClient extends Thread {
             System.out.println("Connected to the chat server @ " + this.hostname);
 
             // Dispatch threads
-            ClientReadThread rt = new ClientReadThread(this.name, socket);
+            ClientReadThread rt = new ClientReadThread(this.name, socket, main);
             rt.start();
             ClientWriteThread wt = new ClientWriteThread(this.name, socket);
             wt.start();
