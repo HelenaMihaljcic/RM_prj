@@ -1,64 +1,70 @@
-
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-final class ChatClient {
-
-    // NOTE: In IntelliJ IDEA you need to allow parallel run for this class
-    // To do so, open Run Configurations dialog and check `Allow parallel run`
-    // for ChatClient configuration
-    public static void main(String[] args) {
-        ChatClient client = new ChatClient("localhost", ChatServer.SERVER_TEST_PORT);
-        System.err.println("Connecting to local port: " + ChatServer.SERVER_TEST_PORT);
-        client.execute();
-    }
-
-
+public final class ChatClient extends Thread {
     private final String hostname;
     private final int port;
     private String name;
+    private Main main;
+    private Socket socket;
 
-
-    ChatClient(String hostname, int port) {
+    public ChatClient(String hostname, int port, Main main) {
         this.hostname = hostname;
         this.port = port;
+        this.main = main;
     }
 
-
-    void execute() {
+    @Override
+    public void run() {
         try {
             this.setName();
+            this.socket = new Socket(this.hostname, this.port);
+            System.out.println("Connected to the chat server @ " + this.hostname);
 
-            try (Socket socket = new Socket(this.hostname, this.port)) {
-                System.out.println("Connected to the chat server @ " + this.hostname);
+            // Dispatch threads
+            ClientReadThread rt = new ClientReadThread(this.name, socket);
+            rt.start();
+            ClientWriteThread wt = new ClientWriteThread(this.name, socket);
+            wt.start();
 
-                // Dispatch threads
-                ClientReadThread rt = new ClientReadThread(this.name, socket);
-                rt.start();
-                ClientWriteThread wt = new ClientWriteThread(this.name, socket);
-                wt.start();
+            // Wait for threads, so we can close the socket (try-with-resources)
+            rt.join();
+            wt.join();
 
-                // Wait for threads so we can close the socket (try-with-resources)
-                rt.join();
-                wt.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
         } catch (UnknownHostException ex) {
             System.out.println("Server not found: " + ex.getMessage());
         } catch (IOException ex) {
             ex.printStackTrace();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } finally {
+            closeSocket();
         }
     }
 
     private void setName() throws IOException {
-        System.out.print("Enter your name: ");
-        BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
-        this.name = stdin.readLine();
-        // We cannot close stdin, since we will use it later
+        this.name = main.getUsername();
+    }
+
+    public void shutdown() {
+        if (socket != null && !socket.isClosed()) {
+            try {
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        this.interrupt();
+    }
+
+    private void closeSocket() {
+        if (socket != null && !socket.isClosed()) {
+            try {
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

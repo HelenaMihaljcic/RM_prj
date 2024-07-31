@@ -2,7 +2,7 @@
 import java.util.Random;
 
 public class HangmanGame {
-    private static final String[] words = {"terminator", "banana", "computer", "cow", "rain", "water"};
+    private static final String[] words = {"vanja", "sanja"};
     private static final int MAX_ATTEMPTS = 7;
 
     private final String word;

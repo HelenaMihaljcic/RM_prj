@@ -1,4 +1,3 @@
-
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -17,6 +16,7 @@ import java.io.IOException;
 
 public class Main extends Application {
     private static final String FILE_NAME = "data.txt";
+
     @FXML
     private ListView<String> igraciLV; // za prikazivanje igraca na pocetku
     @FXML
@@ -24,7 +24,7 @@ public class Main extends Application {
     @FXML
     private ListView<String> chatLV;  // za prikazivanje chata
     @FXML
-    private TextField chatTF;  // za unos poruke u chat
+    private TextField chatTF, nameTF;  // za unos poruke u chat
     @FXML
     private Label labelName, labelCategory = new Label(), labelScore; //za popunjavanje kad se pokrene igra
     @FXML
@@ -41,9 +41,11 @@ public class Main extends Application {
     private Scene pocetna;
 
     private Stage primaryStage;
+    private ChatClient chatClient;
 
     @Override
     public void start(Stage stage) throws Exception {
+        System.out.println("Created ");
         this.primaryStage = stage;
         stage.setTitle("HANGMAN");
 
@@ -52,6 +54,14 @@ public class Main extends Application {
         stage.setScene(scene);
 
         stage.show();
+
+        // Add a shutdown hook to handle client cleanup
+        stage.setOnCloseRequest(event -> {
+            if (chatClient != null && chatClient.isAlive()) {
+                chatClient.shutdown();
+            }
+            System.exit(0);
+        });
     }
 
     public static void main(String[] args) {
@@ -69,13 +79,12 @@ public class Main extends Application {
         startGame();
     }
 
-    //TODO: TREBA DA SE STAVLJA NA SREDINU BEZ OBZIRA KOLIKO RIJEC IMA SLOVA
     public void startGame() {
         String[] challenge = categoryWords.loadChallange();
         String category = challenge[0];
         String word = challenge[1];
 
-        labelCategory = (Label) pocetna.lookup("#labelCategory"); //TODO: POPUNJAVANJE - radi
+        labelCategory = (Label) pocetna.lookup("#labelCategory");
         if (labelCategory != null) {
             labelCategory.setText(category);
         } else {
@@ -93,9 +102,7 @@ public class Main extends Application {
             double spacing = 40; // Razmak između crtica
             double totalWidth = word.length() * spacing; // Ukupna širina crtica
 
-            // Početna X koordinata za centriranje crtica
             double layoutX = (wordsAP.getWidth() - totalWidth) / 2;
-
             double layoutY = crticaLabel.getLayoutY();
 
             for (int i = 0; i < word.length(); i++) {
@@ -109,5 +116,15 @@ public class Main extends Application {
         } else {
             System.out.println("AnchorPane za crtice ili template labela nisu pronađeni na sceni.");
         }
+    }
+
+    @FXML
+    public void Connect(ActionEvent event) {
+        this.chatClient = new ChatClient("localhost", 12345, this);
+        this.chatClient.start(); // Start the ChatClient thread
+    }
+
+    public String getUsername() {
+        return this.nameTF.getText().trim();
     }
 }
