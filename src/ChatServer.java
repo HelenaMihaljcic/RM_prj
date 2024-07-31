@@ -1,4 +1,4 @@
-package p02_chat;
+
 
 import java.io.IOException;
 import java.net.ServerSocket;

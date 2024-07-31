@@ -1,4 +1,4 @@
-package p02_chat;
+
 import java.util.Random;
 
 public class HangmanGame {
