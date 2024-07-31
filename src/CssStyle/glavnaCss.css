@@ -1,0 +1,97 @@
+.root{
+    -fx-background-image:url('../Slike/glavna.png');
+    -fx-background-size: cover;
+}
+
+.anchor-pane{
+    -fx-background-color: rgba(128, 128, 128, 0.147);
+}
+
+.labela{
+    -fx-text-fill: white;
+    -fx-font-size: 20;
+    -fx-alignment: center;
+    -fx-font-family: 'Dialog';
+}
+
+.labela2{
+    -fx-text-fill: white;
+    -fx-font-size: 15;
+    -fx-text-alignment: left;
+    -fx-font-family: 'Dialog ITALIC';
+    -fx-font-style: italic;
+}
+
+.crticaLabel{
+    -fx-text-fill: white;
+    -fx-font-size: 17px;
+    -fx-border-width: 0 0 2px 0; 
+    -fx-border-color: white;
+    -fx-font-family: 'Dialog';
+    -fx-alignment: center;
+}
+
+.list-view {
+    -fx-background-color: transparent;
+    -fx-text-fill: #fff; /* Bijeli tekst */
+    -fx-border-color: gray;
+    -fx-border-width: 3px;
+    -fx-font-family: 'Dialog';
+    -fx-font-size: 14px;
+    -fx-padding: 5px;
+}
+
+.list-view .list-cell:even {
+    -fx-background-color:  gray;
+}
+
+.list-view .list-cell:odd{
+    -fx-background-color: black;
+}
+
+
+.inputField {
+    -fx-background-color: gray; 
+    -fx-text-fill: black; 
+    -fx-border-color: transparent;
+    -fx-font-family: 'Dialog';
+    -fx-font-size: 14px;
+    -fx-padding: 10px;
+    -fx-background-radius: 0; 
+}
+
+.inputField:hover{
+    -fx-cursor: hand;
+}
+
+.sendButton {
+    -fx-background-color: white; 
+    -fx-text-fill: black; 
+    -fx-font-family: 'Dialog';
+    -fx-font-size: 13px;
+    -fx-border-radius: 0; 
+    -fx-background-radius: 0; 
+}
+
+.sendButton:hover {
+    -fx-background-color: black;
+    -fx-text-fill: white; 
+    -fx-cursor: hand; 
+    -fx-border-color: gray;
+}
+
+.slovaDugme{
+    -fx-background-color: black;
+    -fx-text-fill: white;
+    -fx-font-size: 17px;
+    -fx-border-radius: 0; 
+    -fx-border-color: gray;
+    -fx-background-radius: 0; 
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(three-pass-box, #333, 10, 0, 0, 0);
+}
+
+.slovaDugme:hover{
+    -fx-background-color: gray;
+}
+

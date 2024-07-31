@@ -1,0 +1,71 @@
+.root{
+    -fx-background-image:url('../Slike/pocetna5.jpg');
+    -fx-background-size: cover;
+}
+
+.labela{
+    -fx-text-fill: white;
+    -fx-font-size: 25;
+    -fx-alignment: center;
+    -fx-font-family: 'Dialog ITALIC';
+    -fx-font-weight: bold;
+}
+
+.labela2{
+    -fx-text-fill: white;
+    -fx-font-size: 15;
+    -fx-alignment: center;
+    -fx-font-family: 'Dialog ITALIC';
+}
+
+.custom-text-field {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent gray transparent; 
+    -fx-border-width: 0 0 2px 0; 
+    -fx-padding: 5px; 
+}
+
+.custom-text-field:focused {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent gray transparent;
+    -fx-border-width: 0 0 2px 0;
+}
+
+/* Style the ListView to be black and semi-transparent */
+.custom-list-view {
+    -fx-background-color: rgba(0, 0, 0, 0.3); /* Black with 70% opacity */
+    -fx-control-inner-background: rgba(0, 0, 0, 0.7); /* Background of inner cells */
+    -fx-border-color: rgb(117, 116, 116); /* Remove borders */
+}
+
+/* Style the ListCell to be transparent with white text */
+.custom-list-view .list-cell {
+    -fx-background-color: transparent; /* Make the cell background transparent */
+    -fx-text-fill: white; /* White text */
+}
+
+/* Style the ListCell when it is hovered */
+.custom-list-view .list-cell:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.2); /* Lighten the cell background on hover */
+}
+
+/* Style the ListCell when it is selected */
+.custom-list-view .list-cell:selected {
+    -fx-background-color: rgba(255, 255, 255, 0.3); /* Slightly darker background for selected cell */
+    -fx-text-fill: black; /* Change text color when selected */
+}
+
+.custom-button {
+    -fx-background-color: gray;
+    -fx-text-fill: black;
+    -fx-font-size: 15;
+    -fx-font-family: 'Dialog';
+    -fx-border-color: gray;
+    -fx-border-radius: 10;
+}
+
+.custom-button:hover {
+    -fx-background-color: white;
+    -fx-cursor: hand; 
+    -fx-border-color: white;
+}
