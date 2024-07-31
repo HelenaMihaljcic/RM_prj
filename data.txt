@@ -1,0 +1,2 @@
+Biljke,Ruža,Javor,Orhideja,Bor,Jagorčevina,Maslina,Lavanda,Suncokret,Borovnica,Trava,Ružmarin,Šljiva,Dren,Kesten,Limun
+Geografija,Srbija,Hrvatska,Slovenija,Makedonija,Albanija,Grčka,Italija,Nemačka,Francuska,Španija,Portugal,Holandija,Belgija,Švajcarska,Austrija
