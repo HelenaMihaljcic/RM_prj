@@ -14,6 +14,7 @@ import javafx.scene.shape.QuadCurve;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.io.PipedReader;
 import java.util.Optional;
 
 public class Main extends Application {
@@ -55,11 +56,16 @@ public class Main extends Application {
 
         // Load the initial scene
          root = FXMLLoader.load(getClass().getResource("Scene/pocetna_scena.fxml"));
-        pocetna = new Scene(root, 850, 600);
-        stage.setScene(pocetna);
+        Scene scene = new Scene(root, 850, 600);
+        stage.setScene(scene);
 
         stage.show();
 
+
+
+        if(primaryStage != null){
+            System.out.println("daa");
+        }
         // Add a shutdown hook to handle client cleanup
         primaryStage.setOnCloseRequest(event -> {
             if (chatClient != null && chatClient.isAlive()) {
@@ -74,43 +80,42 @@ public class Main extends Application {
         launch(args);
     }
 
-    public void setGlavnaScena(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("Scene/glavna_scena.fxml"));
-        primaryStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        pocetna = new Scene(root);
-        primaryStage.setScene(pocetna);
-        primaryStage.show();
 
-        startGame();
-    }
-
-    public void switchToGameScene() throws IOException {
+    public void switchToGameScene(Stage primaryStage) throws IOException {
         if (primaryStage == null) {
             System.err.println("Error: primaryStage is null");
             return;
         }
         try {
-            // Load the new scene
-             root = FXMLLoader.load(getClass().getResource("Scene/glavna_scena.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("Scene/glavna_scena.fxml"));
             Scene gameScene = new Scene(root);
+            primaryStage = (Stage) igraciLV.getScene().getWindow();
             primaryStage.setScene(gameScene);
-
-            // Update the primary stage and show it
             primaryStage.show();
-
-            // Start the game logic
-            startGame();
+            startGame(primaryStage);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void startGame() {
+
+
+    public void startGame(Stage primaryStage) {
         String[] challenge = categoryWords.loadChallange();
         String category = challenge[0];
         String word = challenge[1];
 
-        labelCategory = (Label) pocetna.lookup("#labelCategory");
+        Scene currentScene = primaryStage.getScene();
+        if (currentScene == null) {
+            System.err.println("Error: currentScene is null");
+            return;
+        }
+
+        // Pronalaženje elemenata u trenutnoj sceni
+        AnchorPane wordsAP = (AnchorPane) currentScene.lookup("#wordsAP");
+        Label crticaLabel = (Label) currentScene.lookup("#crticaLabel");
+        Label labelCategory = (Label) currentScene.lookup("#labelCategory");
+
         if (labelCategory != null) {
             labelCategory.setText(category);
         } else {
@@ -119,8 +124,6 @@ public class Main extends Application {
 
         System.out.println("Kategorija: " + category + " rijec: " + word);
 
-        wordsAP = (AnchorPane) pocetna.lookup("#wordsAP");
-        crticaLabel = (Label) pocetna.lookup("#crticaLabel");
 
         if (wordsAP != null && crticaLabel != null) {
             wordsAP.getChildren().clear();
@@ -176,16 +179,22 @@ public class Main extends Application {
             if (result.isPresent() && result.get() == acceptButton) {
                 chatClient.sendMessage("REQUEST_ACCEPTED " + fromUser);
                 try {
-                    this.switchToGameScene();  // Switch to the game scene
+                    // Set the scene to glavna_scena
+                    Parent root = FXMLLoader.load(getClass().getResource("Scene/glavna_scena.fxml"));
+                    Scene gameScene = new Scene(root);
+                    primaryStage = (Stage) igraciLV.getScene().getWindow();
+                    primaryStage.setScene(gameScene);
+                    primaryStage.show();
+                    startGame(primaryStage);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             } else {
                 chatClient.sendMessage("REQUEST_DECLINED " + fromUser);
+
             }
         });
     }
-
     @FXML
     public void handlePlayGame(ActionEvent event) {
         String selectedUser = igraciLV.getSelectionModel().getSelectedItem();
@@ -209,5 +218,9 @@ public class Main extends Application {
             alert.setContentText("Your game request was declined.");
             alert.showAndWait();
         });
+    }
+
+    public Stage getPrimaryStage() {
+        return primaryStage;
     }
 }
