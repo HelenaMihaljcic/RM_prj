@@ -16,7 +16,7 @@
             <TextField fx:id="nameTF" layoutX="621.0" layoutY="102.0" styleClass="custom-text-field" stylesheets="@../CssStyle/pocetnaCss.css" />
             <ListView fx:id="igraciLV" layoutX="483.0" layoutY="189.0" prefHeight="199.0" prefWidth="285.0" styleClass="custom-list-view" stylesheets="@../CssStyle/pocetnaCss.css" />
             <Label layoutX="479.0" layoutY="151.0" styleClass="labela2" stylesheets="@../CssStyle/pocetnaCss.css" text="CHALLENGE A PLAYER FROM THE ROOM:  " />
-            <Button fx:id="pokreniDugme" layoutX="640.0" layoutY="407.0" mnemonicParsing="false" onAction="#setGlavnaScena" prefHeight="38.0" prefWidth="125.0" styleClass="custom-button" stylesheets="@../CssStyle/pocetnaCss.css" text="PLAY GAME" />
+            <Button fx:id="pokreniDugme" layoutX="640.0" layoutY="407.0" mnemonicParsing="false" onAction="#handlePlayGame" prefHeight="38.0" prefWidth="125.0" styleClass="custom-button" stylesheets="@../CssStyle/pocetnaCss.css" text="PLAY GAME" />
             <Button fx:id="unesiIme" layoutX="485.0" layoutY="407.0" mnemonicParsing="false" onAction="#Connect" prefHeight="38.0" prefWidth="125.0" styleClass="custom-button" stylesheets="@../CssStyle/pocetnaCss.css" text="CONNECT " />
          </children>
       </AnchorPane>

@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -8,18 +9,22 @@ public final class ChatClient extends Thread {
     private String name;
     private Main main;
     private Socket socket;
+    private PrintWriter zaServer;
 
-    public ChatClient(String hostname, int port, Main main) {
+    public ChatClient(String hostname, int port, Main main, String name) {
         this.hostname = hostname;
         this.port = port;
         this.main = main;
+        this.name = name;
     }
 
     @Override
     public void run() {
         try {
-            this.setName();
             this.socket = new Socket(this.hostname, this.port);
+            zaServer = new PrintWriter(socket.getOutputStream(), true);
+            zaServer.println(name);
+
             System.out.println("Connected to the chat server @ " + this.hostname);
 
             // Dispatch threads
@@ -45,6 +50,14 @@ public final class ChatClient extends Thread {
 
     private void setName() throws IOException {
         this.name = main.getUsername();
+    }
+
+    public void sendMessage(String message) {
+        if (zaServer != null) {
+            zaServer.println(message);
+        } else {
+            System.err.println("Cannot send message, PrintWriter is not initialized.");
+        }
     }
 
     public void shutdown() {

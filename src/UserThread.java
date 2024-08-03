@@ -15,7 +15,7 @@ final class UserThread extends Thread {
     private boolean inHangmanGame = false;
     private ChatRoom currentChatRoom;
 
-    UserThread(Socket socket, ChatServer server) {
+    UserThread(Socket socket, ChatServer server, String username) {
         this.sock = socket;
         this.server = server;
         try {
@@ -24,6 +24,7 @@ final class UserThread extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        this.username = username;
     }
 
     @Override
@@ -41,7 +42,11 @@ final class UserThread extends Thread {
                     break;
 
                 if (clientMessage.startsWith("/request ")) {
-                    handlePrivateChatRequest(clientMessage.substring(9).trim());
+                    String targetUsername = clientMessage.substring(9).trim();
+                    server.handleRequest(this.username, targetUsername);
+                } else if (clientMessage.startsWith("/response ")) {
+                    String receivedUsername = clientMessage.substring(10).trim();
+                    handlePrivateChatRequest(receivedUsername);
                 } else if (clientMessage.startsWith("/accept")) {
                     handlePrivateChatAcceptance();
                 } else if (clientMessage.startsWith("/reject")) {
@@ -93,6 +98,11 @@ final class UserThread extends Thread {
             this.hangmanGame = new HangmanGame(this, pendingRequestFrom);
             pendingRequestFrom.hangmanGame = this.hangmanGame;
             this.hangmanGame.startGame();
+
+            // Notify both users about the game start
+            this.sendMessage("GAME_STARTED");
+            pendingRequestFrom.sendMessage("GAME_STARTED");
+
             pendingRequestFrom = null;
         } else {
             sendMessage("No pending game requests.");

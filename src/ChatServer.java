@@ -1,4 +1,6 @@
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
@@ -30,8 +32,12 @@ final class ChatServer {
                 Socket client = server.accept();
                 System.err.println("Client connected.");
 
+                BufferedReader fromUser = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                String username = fromUser.readLine();
+                System.out.println(username + " ime ");
+
                 // We dispatch a new thread for each user in the chat
-                UserThread user = new UserThread(client, this);
+                UserThread user = new UserThread(client, this, username);
                 this.users.add(user);
                 user.start();
                 notifyAllUsers();
@@ -97,5 +103,16 @@ final class ChatServer {
 
     void removePrivateChatRoom(String roomName) {
         privateChatRooms.remove(roomName);
+    }
+
+    void handleRequest(String sender, String receiver) {
+        UserThread senderThread = getUserByName(sender);
+        UserThread receiverThread = getUserByName(receiver);
+
+        if (receiverThread != null) {
+            receiverThread.sendMessage("/response " + sender);
+        } else {
+            senderThread.sendMessage("User not available.");
+        }
     }
 }

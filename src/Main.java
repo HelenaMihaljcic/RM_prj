@@ -14,9 +14,11 @@ import javafx.scene.shape.QuadCurve;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Optional;
 
 public class Main extends Application {
     private static final String FILE_NAME = "data.txt";
+    public Button unesiIme;
 
     @FXML
     private ListView<String> igraciLV; // za prikazivanje igraca na pocetku
@@ -27,7 +29,7 @@ public class Main extends Application {
     @FXML
     private TextField chatTF, nameTF;  // za unos poruke u chat
     @FXML
-    private Label labelName, labelCategory = new Label(), labelScore; //za popunjavanje kad se pokrene igra
+    private Label labelName, labelCategory, labelScore; //za popunjavanje kad se pokrene igra
     @FXML
     private AnchorPane hangmanAP, wordsAP; //anchor za covjeka - napraviti transparentno, wordsAP za crtice
     @FXML
@@ -40,24 +42,26 @@ public class Main extends Application {
     private QuadCurve usne;
     private static CategoryWords categoryWords;
     private Scene pocetna;
-
     private Stage primaryStage;
     private ChatClient chatClient;
+    private UserThread userThread;
+    private Parent root;
+
 
     @Override
     public void start(Stage stage) throws Exception {
-        System.out.println("Created ");
         this.primaryStage = stage;
         stage.setTitle("HANGMAN");
 
-        Parent root = FXMLLoader.load(getClass().getResource("Scene/pocetna_scena.fxml"));
-        Scene scene = new Scene(root, 850, 600);
-        stage.setScene(scene);
+        // Load the initial scene
+         root = FXMLLoader.load(getClass().getResource("Scene/pocetna_scena.fxml"));
+        pocetna = new Scene(root, 850, 600);
+        stage.setScene(pocetna);
 
         stage.show();
 
         // Add a shutdown hook to handle client cleanup
-        stage.setOnCloseRequest(event -> {
+        primaryStage.setOnCloseRequest(event -> {
             if (chatClient != null && chatClient.isAlive()) {
                 chatClient.shutdown();
             }
@@ -78,6 +82,27 @@ public class Main extends Application {
         primaryStage.show();
 
         startGame();
+    }
+
+    public void switchToGameScene() throws IOException {
+        if (primaryStage == null) {
+            System.err.println("Error: primaryStage is null");
+            return;
+        }
+        try {
+            // Load the new scene
+             root = FXMLLoader.load(getClass().getResource("Scene/glavna_scena.fxml"));
+            Scene gameScene = new Scene(root);
+            primaryStage.setScene(gameScene);
+
+            // Update the primary stage and show it
+            primaryStage.show();
+
+            // Start the game logic
+            startGame();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void startGame() {
@@ -121,9 +146,10 @@ public class Main extends Application {
 
     @FXML
     public void Connect(ActionEvent event) {
-        this.chatClient = new ChatClient("localhost", 12345, this);
+        this.chatClient = new ChatClient("localhost", 12345, this, nameTF.getText().trim());
         this.chatClient.start(); // Start the ChatClient thread
     }
+
     public void updateUserList(String[] users) {
         Platform.runLater(() -> {
             igraciLV.getItems().clear();
@@ -133,5 +159,55 @@ public class Main extends Application {
 
     public String getUsername() {
         return this.nameTF.getText().trim();
+    }
+
+    public void receivedRequest(String fromUser) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Game Request");
+            alert.setHeaderText("Game Request from " + fromUser);
+            alert.setContentText("Do you want to accept the game request?");
+
+            ButtonType acceptButton = new ButtonType("Accept");
+            ButtonType declineButton = new ButtonType("Decline");
+
+            alert.getButtonTypes().setAll(acceptButton, declineButton);
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == acceptButton) {
+                chatClient.sendMessage("REQUEST_ACCEPTED " + fromUser);
+                try {
+                    this.switchToGameScene();  // Switch to the game scene
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                chatClient.sendMessage("REQUEST_DECLINED " + fromUser);
+            }
+        });
+    }
+
+    @FXML
+    public void handlePlayGame(ActionEvent event) {
+        String selectedUser = igraciLV.getSelectionModel().getSelectedItem();
+        System.out.println(selectedUser + " izabran");
+        if (selectedUser != null) {
+            chatClient.sendMessage("/request " + selectedUser);
+        } else {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("No User Selected");
+            alert.setHeaderText(null);
+            alert.setContentText("Please select a user to play with.");
+            alert.showAndWait();
+        }
+    }
+
+    public void requestDeclined() {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Request Declined");
+            alert.setHeaderText(null);
+            alert.setContentText("Your game request was declined.");
+            alert.showAndWait();
+        });
     }
 }

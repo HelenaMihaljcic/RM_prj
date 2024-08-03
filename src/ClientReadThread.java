@@ -36,7 +36,14 @@ final class ClientReadThread extends Thread {
                     Platform.runLater(() -> {
                         main.updateUserList(userArray);
                     });
-                } else {
+                } else if (response.startsWith("/response ")) {
+                    String fromUser = response.substring(10);
+                    main.receivedRequest(fromUser);
+                } else if (response.startsWith("REQUEST_DECLINED")) {
+                    main.requestDeclined();
+                } else if (response.startsWith("REQUEST_ACCEPTED ")) {
+                    main.switchToGameScene();
+                }else {
                     System.out.println("\r" + response);
                     System.out.printf("\r[%s]: ", this.username);
                 }
