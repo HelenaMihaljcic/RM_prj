@@ -45,7 +45,6 @@ public class Main extends Application {
     private Scene pocetna;
     private Stage primaryStage;
     private ChatClient chatClient;
-    private UserThread userThread;
     private Parent root;
 
 
@@ -55,17 +54,12 @@ public class Main extends Application {
         stage.setTitle("HANGMAN");
 
         // Load the initial scene
-         root = FXMLLoader.load(getClass().getResource("Scene/pocetna_scena.fxml"));
+        root = FXMLLoader.load(getClass().getResource("Scene/pocetna_scena.fxml"));
         Scene scene = new Scene(root, 850, 600);
         stage.setScene(scene);
 
         stage.show();
 
-
-
-        if(primaryStage != null){
-            System.out.println("daa");
-        }
         // Add a shutdown hook to handle client cleanup
         primaryStage.setOnCloseRequest(event -> {
             if (chatClient != null && chatClient.isAlive()) {
@@ -81,18 +75,14 @@ public class Main extends Application {
     }
 
 
-    public void switchToGameScene(Stage primaryStage) throws IOException {
-        if (primaryStage == null) {
-            System.err.println("Error: primaryStage is null");
-            return;
-        }
+    public void switchToGameScene() throws IOException {
         try {
             Parent root = FXMLLoader.load(getClass().getResource("Scene/glavna_scena.fxml"));
             Scene gameScene = new Scene(root);
             primaryStage = (Stage) igraciLV.getScene().getWindow();
             primaryStage.setScene(gameScene);
             primaryStage.show();
-            startGame(primaryStage);
+            startGame();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -100,7 +90,7 @@ public class Main extends Application {
 
 
 
-    public void startGame(Stage primaryStage) {
+    public void startGame() {
         String[] challenge = categoryWords.loadChallange();
         String category = challenge[0];
         String word = challenge[1];
@@ -151,6 +141,8 @@ public class Main extends Application {
     public void Connect(ActionEvent event) {
         this.chatClient = new ChatClient("localhost", 12345, this, nameTF.getText().trim());
         this.chatClient.start(); // Start the ChatClient thread
+
+        unesiIme.setDisable(true);
     }
 
     public void updateUserList(String[] users) {
@@ -180,12 +172,8 @@ public class Main extends Application {
                 chatClient.sendMessage("REQUEST_ACCEPTED " + fromUser);
                 try {
                     // Set the scene to glavna_scena
-                    Parent root = FXMLLoader.load(getClass().getResource("Scene/glavna_scena.fxml"));
-                    Scene gameScene = new Scene(root);
-                    primaryStage = (Stage) igraciLV.getScene().getWindow();
-                    primaryStage.setScene(gameScene);
-                    primaryStage.show();
-                    startGame(primaryStage);
+                    switchToGameScene();
+                    startGame();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -198,9 +186,16 @@ public class Main extends Application {
     @FXML
     public void handlePlayGame(ActionEvent event) {
         String selectedUser = igraciLV.getSelectionModel().getSelectedItem();
-        System.out.println(selectedUser + " izabran");
-        if (selectedUser != null) {
+        String currentUser = getUsername();
+
+        if (selectedUser != null && !selectedUser.equals(currentUser)) {
             chatClient.sendMessage("/request " + selectedUser);
+        } else if (selectedUser != null && selectedUser.equals(currentUser)) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Invalid Selection");
+            alert.setHeaderText(null);
+            alert.setContentText("You cannot send a request to yourself.");
+            alert.showAndWait();
         } else {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("No User Selected");
@@ -208,6 +203,22 @@ public class Main extends Application {
             alert.setContentText("Please select a user to play with.");
             alert.showAndWait();
         }
+    }
+
+    public void switchToGameSceneForBoth(String sender, String receiver) {
+        Platform.runLater(() -> {
+            if (sender.equals(getUsername()) || receiver.equals(getUsername())) {
+                try {
+                    Parent root = FXMLLoader.load(getClass().getResource("Scene/glavna_scena.fxml"));
+                    Scene gameScene = new Scene(root);
+                    primaryStage.setScene(gameScene);
+                    primaryStage.show();
+                    startGame();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     public void requestDeclined() {

@@ -37,6 +37,8 @@ final class ClientReadThread extends Thread {
                     return;
                 }
 
+                System.err.println(response + "");
+
                 if (response.startsWith("UPDATE_USERS")) {
                     String users = response.substring(13);
                     String[] userArray = users.split(",");
@@ -48,9 +50,15 @@ final class ClientReadThread extends Thread {
                     main.receivedRequest(fromUser);
                 } else if (response.startsWith("REQUEST_DECLINED")) {
                     main.requestDeclined();
-                } else if (response.startsWith("REQUEST_ACCEPTED ")) {
+                } else if (response.contains("REQUEST_ACCEPTED ")) {
                     System.out.println("Radi kod mene sto sam poslala zahtjev");
-                    main.switchToGameScene(primaryStage); // Pass primaryStage to switchToGameScene
+                    Platform.runLater(() -> {
+                        try {
+                            main.switchToGameScene();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
                 } else {
                     System.out.println("\r" + response);
                     System.out.printf("\r[%s]: ", this.username);

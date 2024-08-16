@@ -1,5 +1,3 @@
-
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -8,7 +6,6 @@ import java.util.Scanner;
 final class ClientWriteThread extends Thread {
     private final String username;
     private PrintWriter toServer;
-
 
     ClientWriteThread(String username, Socket socket) {
         this.username = username;
@@ -19,7 +16,6 @@ final class ClientWriteThread extends Thread {
             ex.printStackTrace();
         }
     }
-
 
     @Override
     public void run() {

@@ -34,7 +34,7 @@ final class ChatServer {
 
                 BufferedReader fromUser = new BufferedReader(new InputStreamReader(client.getInputStream()));
                 String username = fromUser.readLine();
-                System.out.println(username + " ime ");
+                System.out.println(username + " connected.");
 
                 // We dispatch a new thread for each user in the chat
                 UserThread user = new UserThread(client, this, username);
@@ -113,6 +113,17 @@ final class ChatServer {
             receiverThread.sendMessage("/response " + sender);
         } else {
             senderThread.sendMessage("User not available.");
+        }
+    }
+
+    void handleGameAcceptance(String sender, String receiver) {
+        UserThread senderThread = getUserByName(sender);
+        UserThread receiverThread = getUserByName(receiver);
+
+        if (senderThread != null && receiverThread != null) {
+            String gameStartMessage = "REQUEST_ACCEPTED " + sender + " " + receiver;
+            senderThread.sendMessage(gameStartMessage);
+            receiverThread.sendMessage(gameStartMessage);
         }
     }
 }
