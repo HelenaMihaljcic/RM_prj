@@ -171,8 +171,6 @@ public class Main extends Application {
             if (result.isPresent() && result.get() == acceptButton) {
                 chatClient.sendMessage("REQUEST_ACCEPTED " + fromUser);
 
-                // Nakon što ste prihvatili zahtjev, trebali biste pričekati odgovor od servera
-                // koji će sadržavati informacije o igri
             } else {
                 chatClient.sendMessage("REQUEST_DECLINED " + fromUser);
             }
