@@ -23,6 +23,7 @@
     -fx-border-color: transparent transparent gray transparent; 
     -fx-border-width: 0 0 2px 0; 
     -fx-padding: 5px; 
+    -fx-text-fill: white;
 }
 
 .custom-text-field:focused {

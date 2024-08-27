@@ -201,21 +201,6 @@ public class Main extends Application {
         }
     }
 
-    public void switchToGameSceneForBoth(String sender, String receiver) {
-        Platform.runLater(() -> {
-            if (sender.equals(getUsername()) || receiver.equals(getUsername())) {
-                try {
-                    Parent root = FXMLLoader.load(getClass().getResource("Scene/glavna_scena.fxml"));
-                    Scene gameScene = new Scene(root);
-                    primaryStage.setScene(gameScene);
-                    primaryStage.show();
-                    //startGame();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
 
     public void requestDeclined() {
         Platform.runLater(() -> {
