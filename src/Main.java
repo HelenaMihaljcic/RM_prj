@@ -138,7 +138,7 @@ public class Main extends Application {
     }
 
     @FXML
-    public void Connect(ActionEvent event) {
+    public void ConnectUser(ActionEvent event) {
         this.chatClient = new ChatClient("localhost", 12345, this, nameTF.getText().trim());
         this.chatClient.start(); // Start the ChatClient thread
 
