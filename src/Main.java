@@ -20,6 +20,7 @@ import java.util.Optional;
 public class Main extends Application {
     private static final String FILE_NAME = "data.txt";
     public Button unesiIme;
+    private String word, category;
 
     @FXML
     private ListView<String> igraciLV; // za prikazivanje igraca na pocetku
@@ -75,14 +76,14 @@ public class Main extends Application {
     }
 
 
-    public void switchToGameScene() throws IOException {
+    public void switchToGameScene(String category, String word) throws IOException {
         try {
             Parent root = FXMLLoader.load(getClass().getResource("Scene/glavna_scena.fxml"));
             Scene gameScene = new Scene(root);
             primaryStage = (Stage) igraciLV.getScene().getWindow();
             primaryStage.setScene(gameScene);
             primaryStage.show();
-            startGame();
+            startGame(word, category);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -90,10 +91,9 @@ public class Main extends Application {
 
 
 
-    public void startGame() {
-        String[] challenge = categoryWords.loadChallange();
-        String category = challenge[0];
-        String word = challenge[1];
+
+    public void startGame(String word, String category) {
+
 
         Scene currentScene = primaryStage.getScene();
         if (currentScene == null) {
@@ -170,19 +170,15 @@ public class Main extends Application {
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == acceptButton) {
                 chatClient.sendMessage("REQUEST_ACCEPTED " + fromUser);
-                try {
-                    // Set the scene to glavna_scena
-                    switchToGameScene();
-                    startGame();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+
+                // Nakon što ste prihvatili zahtjev, trebali biste pričekati odgovor od servera
+                // koji će sadržavati informacije o igri
             } else {
                 chatClient.sendMessage("REQUEST_DECLINED " + fromUser);
-
             }
         });
     }
+
     @FXML
     public void handlePlayGame(ActionEvent event) {
         String selectedUser = igraciLV.getSelectionModel().getSelectedItem();
@@ -213,7 +209,7 @@ public class Main extends Application {
                     Scene gameScene = new Scene(root);
                     primaryStage.setScene(gameScene);
                     primaryStage.show();
-                    startGame();
+                    //startGame();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

@@ -3,11 +3,16 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
 final class ChatServer {
     static final int SERVER_TEST_PORT = 12345;
+    private static Map<String, List<String>> kategorijeMap = new HashMap<>();
 
     public static void main(String[] args) {
         ChatServer server = new ChatServer(SERVER_TEST_PORT);
@@ -28,9 +33,10 @@ final class ChatServer {
         try (ServerSocket server = new ServerSocket(port)) {
             System.err.println("Chat server is listening on port: " + port);
 
+            loadCategories("Kategorije");
+
             while (true) {
                 Socket client = server.accept();
-                System.err.println("Client connected.");
 
                 BufferedReader fromUser = new BufferedReader(new InputStreamReader(client.getInputStream()));
                 String username = fromUser.readLine();
@@ -105,6 +111,36 @@ final class ChatServer {
         privateChatRooms.remove(roomName);
     }
 
+    public static String[] getRandomCategoryAndWord() {
+        if (kategorijeMap.isEmpty()) {
+            return null; // Nema kategorija
+        }
+
+        // Nasumično izaberi kategoriju
+        List<String> categories = new ArrayList<>(kategorijeMap.keySet());
+        String randomCategory = categories.get(new Random().nextInt(categories.size()));
+
+        // Nasumično izaberi reč iz izabrane kategorije
+        List<String> words = kategorijeMap.get(randomCategory);
+        String randomWord = words.get(new Random().nextInt(words.size()));
+
+        return new String[]{randomCategory, randomWord};
+    }
+
+
+    private static void loadCategories(String folderPath) {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(folderPath), "*.txt")) {
+            for (Path entry : stream) {
+                String categoryName = entry.getFileName().toString().replace(".txt", "");
+                List<String> words = Files.lines(entry)
+                        .collect(Collectors.toList());
+                kategorijeMap.put(categoryName, words);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     void handleRequest(String sender, String receiver) {
         UserThread senderThread = getUserByName(sender);
         UserThread receiverThread = getUserByName(receiver);
@@ -117,13 +153,23 @@ final class ChatServer {
     }
 
     void handleGameAcceptance(String sender, String receiver) {
+        String[] challenge = getRandomCategoryAndWord();
+        String category = challenge[0];
+        String word = challenge[1];
+
         UserThread senderThread = getUserByName(sender);
         UserThread receiverThread = getUserByName(receiver);
 
         if (senderThread != null && receiverThread != null) {
-            String gameStartMessage = "REQUEST_ACCEPTED " + sender + " " + receiver;
+            // Create the game and start it
+            senderThread.setInHangmanGame(true);
+            receiverThread.setInHangmanGame(true);
+
+            // Notify both users about the game start
+            String gameStartMessage = "REQUEST_ACCEPTED:" + category + ":" + word;
             senderThread.sendMessage(gameStartMessage);
             receiverThread.sendMessage(gameStartMessage);
         }
     }
+
 }

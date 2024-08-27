@@ -47,8 +47,10 @@ final class UserThread extends Thread {
                 } else if (clientMessage.startsWith("/response ")) {
                     String receivedUsername = clientMessage.substring(10).trim();
                     handlePrivateChatRequest(receivedUsername);
-                } else if (clientMessage.startsWith("/accept")) {
-                    handlePrivateChatAcceptance();
+                } else if (clientMessage.contains("REQUEST_ACCEPTED")) {
+                    String targetUsername = clientMessage.substring(17).trim();
+
+                    server.handleGameAcceptance(this.username, targetUsername);
                 } else if (clientMessage.startsWith("/reject")) {
                     handlePrivateChatRejection();
                 } else if (clientMessage.startsWith("/letter ") || clientMessage.startsWith("/word ")) {

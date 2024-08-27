@@ -37,7 +37,7 @@ final class ClientReadThread extends Thread {
                     return;
                 }
 
-                System.err.println(response + "");
+                System.err.println(response);
 
                 if (response.startsWith("UPDATE_USERS")) {
                     String users = response.substring(13);
@@ -50,15 +50,19 @@ final class ClientReadThread extends Thread {
                     main.receivedRequest(fromUser);
                 } else if (response.startsWith("REQUEST_DECLINED")) {
                     main.requestDeclined();
-                } else if (response.contains("REQUEST_ACCEPTED ")) {
-                    System.out.println("Radi kod mene sto sam poslala zahtjev");
-                    Platform.runLater(() -> {
-                        try {
-                            main.switchToGameScene();
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    });
+                } else if (response.startsWith("REQUEST_ACCEPTED")) {
+                    String[] parts = response.split(":", 3);
+                    if (parts.length == 3) {
+                        String category = parts[1];
+                        String word = parts[2];
+                        Platform.runLater(() -> {
+                            try {
+                                main.switchToGameScene(category, word);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        });
+                    }
                 } else {
                     System.out.println("\r" + response);
                     System.out.printf("\r[%s]: ", this.username);
@@ -70,5 +74,6 @@ final class ClientReadThread extends Thread {
             }
         }
     }
+
 
 }
