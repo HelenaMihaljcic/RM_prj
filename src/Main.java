@@ -76,6 +76,12 @@ public class Main extends Application {
     }
 
 
+    private String trenutniKorisnik;
+
+    public void setTrenutniKorisnik(String trenutniKorisnik) {
+        this.trenutniKorisnik = trenutniKorisnik;
+    }
+
     public void switchToGameScene(String category, String word) throws IOException {
         try {
             Parent root = FXMLLoader.load(getClass().getResource("Scene/glavna_scena.fxml"));
@@ -142,6 +148,8 @@ public class Main extends Application {
         this.chatClient = new ChatClient("localhost", 12345, this, nameTF.getText().trim());
         this.chatClient.start(); // Start the ChatClient thread
 
+        setTrenutniKorisnik(this.chatClient.getName2());
+
         unesiIme.setDisable(true);
     }
 
@@ -176,6 +184,8 @@ public class Main extends Application {
             }
         });
     }
+
+
 
     @FXML
     public void handlePlayGame(ActionEvent event) {
@@ -213,4 +223,15 @@ public class Main extends Application {
     public Stage getPrimaryStage() {
         return primaryStage;
     }
+
+    @FXML
+    private void handleLetterGuess(ActionEvent event) {
+        System.out.println(trenutniKorisnik);
+
+        Button clickedButton = (Button) event.getSource();
+        String guessedLetter = clickedButton.getText();
+        this.chatClient.sendMessage("/letter " + guessedLetter); //ne zna se koji igrac salje slovo
+        //System.out.println(guessedLetter);
+    }
+
 }

@@ -172,4 +172,18 @@ final class ChatServer {
         }
     }
 
+
+    //SERVER NE ZNA KO JE POSLAO PORUKU - NE PAMTI SE IME IGRACA
+    private void handleHangmanGuess(String message) {
+        String guessedLetter = message.substring(8).trim(); // Izvaditi slovo iz poruke
+        UserThread sender = getUserByName(message.split(" ")[1]);
+
+        if (sender != null) {
+            // Pošaljite slovo igraču
+            sender.sendMessage("LETTER " + guessedLetter);
+        }
+    }
+
+
+
 }

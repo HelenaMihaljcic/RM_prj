@@ -80,4 +80,8 @@ public final class ChatClient extends Thread {
             }
         }
     }
+
+    public String getName2() {
+        return name;
+    }
 }

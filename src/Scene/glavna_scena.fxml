@@ -38,42 +38,42 @@
                   <Line fx:id="nos" endX="-100.00001525878906" endY="6.20001220703125" layoutX="243.0" layoutY="79.0" startX="-100.0" stroke="WHITE" strokeWidth="2.0" visible="false" />
                   <QuadCurve fx:id="usne" controlX="-39.40000534057617" controlY="16.600006103515625" endX="-29.000011444091797" fill="#ffffff00" layoutX="182.0" layoutY="88.0" startX="-50.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="2.0" visible="false" />
                </children></AnchorPane>
-            <Button layoutX="24.0" layoutY="370.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="A" />
-            <Button layoutX="81.0" layoutY="370.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="B" />
-            <Button layoutX="136.0" layoutY="370.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="C" />
-            <Button layoutX="192.0" layoutY="370.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="Č" />
-            <Button layoutX="248.0" layoutY="370.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="Ć" />
-            <Button layoutX="305.0" layoutY="370.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="D" />
-            <Button layoutX="362.0" layoutY="370.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="Dž" />
-            <Button layoutX="419.0" layoutY="370.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="Đ" />
-            <Button layoutX="81.0" layoutY="420.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="F" />
-            <Button layoutX="136.0" layoutY="420.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="G" />
-            <Button layoutX="192.0" layoutY="420.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="H" />
-            <Button layoutX="248.0" layoutY="420.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="I" />
-            <Button layoutX="306.0" layoutY="420.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="J" />
-            <Button layoutX="361.0" layoutY="420.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="K" />
-            <Button layoutX="419.0" layoutY="420.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="L" />
-            <Button layoutX="23.0" layoutY="468.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="Lj" />
-            <Button layoutX="77.0" layoutY="468.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="M" />
-            <Button layoutX="132.0" layoutY="468.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="N" />
-            <Button layoutX="190.0" layoutY="468.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="Nj" />
-            <Button layoutX="247.0" layoutY="468.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="O" />
-            <Button layoutX="305.0" layoutY="468.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="P" />
-            <Button layoutX="360.0" layoutY="468.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="R" />
-            <Button layoutX="419.0" layoutY="468.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="S" />
-            <Button layoutX="22.0" layoutY="521.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="Š" />
-            <Button layoutX="83.0" layoutY="521.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="T" />
-            <Button layoutX="139.0" layoutY="520.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="U" />
+            <Button layoutX="24.0" layoutY="370.0" mnemonicParsing="false" onAction="#handleLetterGuess" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="A" />
+            <Button layoutX="81.0" layoutY="370.0" mnemonicParsing="false" onAction="#handleLetterGuess" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="B" />
+            <Button layoutX="136.0" layoutY="370.0" mnemonicParsing="false" onAction="#handleLetterGuess" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="C" />
+            <Button layoutX="192.0" layoutY="370.0" mnemonicParsing="false" onAction="#handleLetterGuess" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="Č" />
+            <Button layoutX="248.0" layoutY="370.0" mnemonicParsing="false" onAction="#handleLetterGuess" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="Ć" />
+            <Button layoutX="305.0" layoutY="370.0" mnemonicParsing="false" onAction="#handleLetterGuess" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="D" />
+            <Button layoutX="362.0" layoutY="370.0" mnemonicParsing="false" onAction="#handleLetterGuess" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="Dž" />
+            <Button layoutX="419.0" layoutY="370.0" mnemonicParsing="false" onAction="#handleLetterGuess" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="Đ" />
+            <Button layoutX="81.0" layoutY="420.0" mnemonicParsing="false" onAction="#handleLetterGuess" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="F" />
+            <Button layoutX="136.0" layoutY="420.0" mnemonicParsing="false" onAction="#handleLetterGuess" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="G" />
+            <Button layoutX="192.0" layoutY="420.0" mnemonicParsing="false" onAction="#handleLetterGuess" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="H" />
+            <Button layoutX="248.0" layoutY="420.0" mnemonicParsing="false" onAction="#handleLetterGuess" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="I" />
+            <Button layoutX="306.0" layoutY="420.0" mnemonicParsing="false" onAction="#handleLetterGuess" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="J" />
+            <Button layoutX="361.0" layoutY="420.0" mnemonicParsing="false" onAction="#handleLetterGuess" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="K" />
+            <Button layoutX="419.0" layoutY="420.0" mnemonicParsing="false" onAction="#handleLetterGuess" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="L" />
+            <Button layoutX="23.0" layoutY="468.0" mnemonicParsing="false" onAction="#handleLetterGuess" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="Lj" />
+            <Button layoutX="77.0" layoutY="468.0" mnemonicParsing="false" onAction="#handleLetterGuess" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="M" />
+            <Button layoutX="132.0" layoutY="468.0" mnemonicParsing="false" onAction="#handleLetterGuess" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="N" />
+            <Button layoutX="190.0" layoutY="468.0" mnemonicParsing="false" onAction="#handleLetterGuess" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="Nj" />
+            <Button layoutX="247.0" layoutY="468.0" mnemonicParsing="false" onAction="#handleLetterGuess" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="O" />
+            <Button layoutX="305.0" layoutY="468.0" mnemonicParsing="false" onAction="#handleLetterGuess" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="P" />
+            <Button layoutX="360.0" layoutY="468.0" mnemonicParsing="false" onAction="#handleLetterGuess" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="R" />
+            <Button layoutX="419.0" layoutY="468.0" mnemonicParsing="false" onAction="#handleLetterGuess" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="S" />
+            <Button layoutX="22.0" layoutY="521.0" mnemonicParsing="false" onAction="#handleLetterGuess" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="Š" />
+            <Button layoutX="83.0" layoutY="521.0" mnemonicParsing="false" onAction="#handleLetterGuess" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="T" />
+            <Button layoutX="139.0" layoutY="520.0" mnemonicParsing="false" onAction="#handleLetterGuess" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="U" />
             <Button layoutX="376.0" layoutY="525.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="86.0" styleClass="sendButton" stylesheets="@../CssStyle/glavnaCss.css" text="SOLVE" />
             <AnchorPane fx:id="wordsAP" layoutX="383.0" layoutY="113.0" prefHeight="144.0" prefWidth="418.0">
                <children>
                   <Label fx:id="crticaLabel" layoutX="91.0" layoutY="72.0" prefHeight="40.0" prefWidth="46.0" styleClass="crticaLabel" stylesheets="@../CssStyle/glavnaCss.css" text="A" textFill="WHITE" visible="false" />
                </children>
             </AnchorPane>
-            <Button layoutX="24.0" layoutY="419.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="E" />
-            <Button layoutX="196.0" layoutY="520.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="V" />
-            <Button layoutX="250.0" layoutY="521.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="Z" />
-            <Button layoutX="305.0" layoutY="521.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="Ž" />
+            <Button layoutX="24.0" layoutY="419.0" mnemonicParsing="false" onAction="#handleLetterGuess" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="E" />
+            <Button layoutX="196.0" layoutY="520.0" mnemonicParsing="false" onAction="#handleLetterGuess" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="V" />
+            <Button layoutX="250.0" layoutY="521.0" mnemonicParsing="false" onAction="#handleLetterGuess" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="Z" />
+            <Button layoutX="305.0" layoutY="521.0" mnemonicParsing="false" onAction="#handleLetterGuess" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="Ž" />
             <Label layoutX="557.0" layoutY="61.0" styleClass="labela" stylesheets="@../CssStyle/glavnaCss.css" text="SCORE" />
             <Label fx:id="labelScore" layoutX="531.0" layoutY="84.0" prefHeight="30.0" prefWidth="122.0" style="-fx-alignment: center;" styleClass="labela2" stylesheets="@../CssStyle/glavnaCss.css" text="popuni" />
          </children>
