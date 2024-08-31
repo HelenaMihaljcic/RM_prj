@@ -1,6 +1,7 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.DirectoryStream;
@@ -12,7 +13,10 @@ import java.util.stream.Collectors;
 
 final class ChatServer {
     static final int SERVER_TEST_PORT = 12345;
+    private static ChatServer instance;
     private static Map<String, List<String>> kategorijeMap = new HashMap<>();
+    private static BufferedReader fromUser;
+    private static PrintWriter toUser;
 
     public static void main(String[] args) {
         ChatServer server = new ChatServer(SERVER_TEST_PORT);
@@ -28,6 +32,9 @@ final class ChatServer {
         this.users = Collections.synchronizedSet(new HashSet<>());
         this.privateChatRooms = Collections.synchronizedMap(new HashMap<>());
     }
+    public static ChatServer getInstance() {
+        return instance;
+    }
 
     void execute() {
         try (ServerSocket server = new ServerSocket(port)) {
@@ -38,9 +45,10 @@ final class ChatServer {
             while (true) {
                 Socket client = server.accept();
 
-                BufferedReader fromUser = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                fromUser = new BufferedReader(new InputStreamReader(client.getInputStream()));
                 String username = fromUser.readLine();
                 System.out.println(username + " connected.");
+
 
                 // We dispatch a new thread for each user in the chat
                 UserThread user = new UserThread(client, this, username);
@@ -63,12 +71,16 @@ final class ChatServer {
         }
     }
 
-    void broadcast(UserThread sender, String message) {
+    public void broadcast(UserThread sender, String message) {
         synchronized (this.users) {
             this.users.stream()
                     .filter(u -> u != sender)
-                    .forEach(u -> u.sendMessage(message));
+                    .forEach(u -> u.getToUser().println(message));
         }
+    }
+
+    static void sendMessageToUser(UserThread receiver, String message){
+        receiver.getToUser().println(message);
     }
 
     void remove(UserThread user) {
@@ -97,19 +109,46 @@ final class ChatServer {
     }
 
     void createPrivateChatRoom(String roomName, UserThread user1, UserThread user2) {
-        ChatRoom chatRoom = new ChatRoom(roomName, user1, user2);
+        ChatRoom chatRoom = new ChatRoom(roomName, user1, user2, this);
         privateChatRooms.put(roomName, chatRoom);
         user1.setCurrentChatRoom(chatRoom);
         user2.setCurrentChatRoom(chatRoom);
     }
 
     ChatRoom getPrivateChatRoom(String roomName) {
-        return privateChatRooms.get(roomName);
+        // Synchronized block to ensure thread safety while accessing the map
+        synchronized (privateChatRooms) {
+            // Iterate through the entries in the map
+            for (Map.Entry<String, ChatRoom> entry : privateChatRooms.entrySet()) {
+                // Check if the key (room name) contains the specified roomName
+                if (entry.getKey().contains(roomName)) {
+                    // Return the matching ChatRoom
+                    return entry.getValue();
+                }
+            }
+        }
+        // Return null if no matching room is found
+        return null;
     }
 
-    void removePrivateChatRoom(String roomName) {
-        privateChatRooms.remove(roomName);
+
+    void deletePrivateChatRoom(String roomName) {
+        // Synchronized block to ensure thread safety while modifying the map
+        synchronized (privateChatRooms) {
+            // Iterate through the keys in the map
+            Iterator<String> iterator = privateChatRooms.keySet().iterator();
+            while (iterator.hasNext()) {
+                String key = iterator.next();
+                // Check if the key (room name) contains the specified roomName
+                if (key.contains(roomName)) {
+                    // Remove the entry if it matches the condition
+                    iterator.remove();
+                    break; // Exit the loop once the room is found and removed
+                }
+            }
+        }
     }
+
 
     public static String[] getRandomCategoryAndWord() {
         if (kategorijeMap.isEmpty()) {
@@ -161,15 +200,19 @@ final class ChatServer {
         UserThread receiverThread = getUserByName(receiver);
 
         if (senderThread != null && receiverThread != null) {
-            // Create the game and start it
+            HangmanGame game = new HangmanGame(senderThread, receiverThread, word, this);
+            createPrivateChatRoom(sender, senderThread, receiverThread);
+            senderThread.setHangmanGame(game);
+            receiverThread.setHangmanGame(game);
             senderThread.setInHangmanGame(true);
             receiverThread.setInHangmanGame(true);
 
             // Notify both users about the game start
-            String gameStartMessage = "REQUEST_ACCEPTED:" + category + ":" + word;
+            String gameStartMessage = "REQUEST_ACCEPTED:" + category + ":" + word + ":" + senderThread.getNickname();
             senderThread.sendMessage(gameStartMessage);
             receiverThread.sendMessage(gameStartMessage);
         }
     }
+
 
 }
