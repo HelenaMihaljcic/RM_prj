@@ -51,18 +51,31 @@ final class ClientReadThread extends Thread {
                 } else if (response.startsWith("REQUEST_DECLINED")) {
                     main.requestDeclined();
                 } else if (response.startsWith("REQUEST_ACCEPTED")) {
-                    String[] parts = response.split(":", 3);
-                    if (parts.length == 3) {
+                    String[] parts = response.split(":");
+                    if (parts.length == 4) {
                         String category = parts[1];
                         String word = parts[2];
+                        String startPlayer = parts[3];
                         Platform.runLater(() -> {
                             try {
-                                main.switchToGameScene(category, word);
+                                main.switchToGameScene(category, word, startPlayer);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
                         });
                     }
+                } else if (response.startsWith("/turn")) {
+                    String[] players = response.split(":");
+                    String currentPlayer = players[1];
+
+                    Platform.runLater(() -> {
+                        main.setTurnLabel(currentPlayer);
+                    });
+                } else if (response.contains("NOT TURN")) {
+                    main.showNotYourTurnAlert();
+                } else if (response.startsWith("/msg")) {
+                    String[] msg = response.split(":");
+                    main.updateChat("["+msg[1]+"]: " + msg[2]);
                 } else {
                     System.out.println("\r" + response);
                     System.out.printf("\r[%s]: ", this.username);

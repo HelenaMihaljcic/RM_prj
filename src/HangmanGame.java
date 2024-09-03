@@ -1,9 +1,11 @@
-
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
+import java.util.HashSet;
+import java.util.Set;
 
-public class HangmanGame { private final UserThread player1;
+public class HangmanGame {
+    private final UserThread player1;
     private final UserThread player2;
     private final String word;
     private final Set<String> guessedLetters;

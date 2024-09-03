@@ -83,9 +83,5 @@ public final class ChatClient extends Thread {
         }
     }
 
-    private void handleServerMessage(String message) {
-        // Prosledi poruku `Main` klasi za dalju obrada
-        Platform.runLater(() -> main.handleServerMessage(message));
-    }
 
 }

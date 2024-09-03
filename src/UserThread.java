@@ -1,7 +1,4 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 
 final class UserThread extends Thread {
@@ -27,9 +24,6 @@ final class UserThread extends Thread {
         this.username = username;
     }
 
-    public PrintWriter getToUser() {
-        return toUser;
-    }
 
     @Override
     public void run() {
@@ -63,12 +57,9 @@ final class UserThread extends Thread {
                     } else {
                         sendMessage("You are not in a game.");
                     }
-                } else if (!inHangmanGame) {
-                    if (currentChatRoom == null) {
-                        this.server.broadcast(this, "[" + this.username + "]: " + clientMessage);
-                    } else {
-                        currentChatRoom.broadcast(this, "[" + this.username + "]: " + clientMessage);
-                    }
+                } else if (inHangmanGame) {
+                    currentChatRoom.broadcast(this.username, "[" + this.username + "]: " + clientMessage);
+
                 }
             } while (!clientMessage.equals("bye"));
 
@@ -117,6 +108,7 @@ final class UserThread extends Thread {
     }
 
 
+
      */
 
 
@@ -128,6 +120,7 @@ final class UserThread extends Thread {
             sendMessage("No pending game requests.");
         }
     }
+    /*
 
     private void handleHangmanGuess(String message) {
         if (message.startsWith("/letter ")) {
@@ -139,9 +132,14 @@ final class UserThread extends Thread {
         }
     }
 
+     */
+
     void sendMessage(String message) {
         if (this.toUser != null)
             this.toUser.println(message);
+    }
+    public void sendToServer(String message){
+
     }
 
     String getNickname() {
@@ -158,5 +156,46 @@ final class UserThread extends Thread {
 
     public void setInHangmanGame(boolean inHangmanGame) {
         this.inHangmanGame = inHangmanGame;
+    }
+
+
+    public ChatServer getServer() {
+        return server;
+    }
+
+    public Socket getSock() {
+        return sock;
+    }
+
+    public BufferedReader getFromUser() {
+        return fromUser;
+    }
+
+    public PrintWriter getToUser() {
+        return toUser;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public UserThread getPendingRequestFrom() {
+        return pendingRequestFrom;
+    }
+
+    public HangmanGame getHangmanGame() {
+        return hangmanGame;
+    }
+
+    public boolean isInHangmanGame() {
+        return inHangmanGame;
+    }
+
+    public ChatRoom getCurrentChatRoom() {
+        return currentChatRoom;
+    }
+
+    public void setHangmanGame(HangmanGame hangmanGame) {
+        this.hangmanGame = hangmanGame;
     }
 }
