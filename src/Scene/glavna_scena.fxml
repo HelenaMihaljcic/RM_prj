@@ -63,7 +63,7 @@
             <Button fx:id="Š" layoutX="361.0" layoutY="468.0" mnemonicParsing="false" onAction="#handleLetterGuess" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="Š" />
             <Button fx:id="T" layoutX="419.0" layoutY="468.0" mnemonicParsing="false" onAction="#handleLetterGuess" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="T" />
             <Button fx:id="U" layoutX="24.0" layoutY="520.0" mnemonicParsing="false" onAction="#handleLetterGuess" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="U" />
-            <AnchorPane fx:id="wordsAP" layoutX="384.0" layoutY="113.0" prefHeight="144.0" prefWidth="445.0">
+            <AnchorPane fx:id="wordsAP" layoutX="384.0" layoutY="115.0" prefHeight="144.0" prefWidth="445.0">
                <children>
                   <Label fx:id="crticaLabel" layoutX="19.0" layoutY="9.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="40.0" prefWidth="46.0" styleClass="crticaLabel" stylesheets="@../CssStyle/glavnaCss.css" text="A" textFill="WHITE" visible="false" />
                </children>
@@ -72,8 +72,8 @@
             <Button fx:id="V" layoutX="81.0" layoutY="520.0" mnemonicParsing="false" onAction="#handleLetterGuess" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="V" />
             <Button fx:id="Z" layoutX="136.0" layoutY="520.0" mnemonicParsing="false" onAction="#handleLetterGuess" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="Z" />
             <Button fx:id="Ž" layoutX="192.0" layoutY="520.0" mnemonicParsing="false" onAction="#handleLetterGuess" prefHeight="40.0" prefWidth="45.0" styleClass="slovaDugme" stylesheets="@../CssStyle/glavnaCss.css" text="Ž" />
-            <Label layoutX="557.0" layoutY="61.0" styleClass="labela" stylesheets="@../CssStyle/glavnaCss.css" text="SCORE" />
-            <Label fx:id="labelScore" layoutX="531.0" layoutY="84.0" prefHeight="30.0" prefWidth="122.0" style="-fx-alignment: center;" styleClass="labela2" stylesheets="@../CssStyle/glavnaCss.css" text="popuni" />
+            <Label layoutX="557.0" layoutY="56.0" styleClass="labela" stylesheets="@../CssStyle/glavnaCss.css" text="SCORE" />
+            <Label fx:id="labelScore" layoutX="530.0" layoutY="82.0" prefHeight="34.0" prefWidth="131.0" style="-fx-font-weight: bold; -fx-font-size: 30;" styleClass="labela" stylesheets="@../CssStyle/glavnaCss.css" text="0" />
             <Label layoutX="304.0" layoutY="516.0" prefHeight="46.0" prefWidth="104.0" style="-fx-text-alignment: center;" text=" Click on letter &#10;to guess" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="13.0" />

@@ -3,7 +3,6 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -14,7 +13,6 @@ import javafx.scene.shape.QuadCurve;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.io.PipedReader;
 import java.util.*;
 
 public class Main extends Application {
@@ -32,7 +30,7 @@ public class Main extends Application {
     @FXML
     private Label labelName, labelCategory, labelScore, labelTurn; //za popunjavanje kad se pokrene igra
     @FXML
-    private AnchorPane hangmanAP, wordsAP; //anchor za covjeka - napraviti transparentno, wordsAP za crtice
+    private AnchorPane hangmanAP, wordsAP;
     @FXML
     private Label crticaLabel;
     @FXML
@@ -53,6 +51,9 @@ public class Main extends Application {
     private int incorrectAttempts = 0;
     private static final int MAX_ATTEMPTS = 10;
 
+    private int score = 0;
+    private Map<String, Integer> playerScores = new HashMap<>();
+    private Map<String, Label> playerScoreLabels = new HashMap<>();
 
 
 
@@ -172,6 +173,20 @@ public class Main extends Application {
                 // Prelazi u novi red za svaku reč
                 layoutY += 35;
             }
+
+            List<String> players = new ArrayList<>(Arrays.asList(igraciLV.getItems().toArray(new String[0])));
+            for (String player : players) {
+                if (!playerScoreLabels.containsKey(player)) {
+                    // Ako labela za igrača ne postoji, pronađi je i dodaj u mapu
+                    Label scoreLabel = (Label) currentScene.lookup("#" + player + "Score");
+                    if (scoreLabel != null) {
+                        playerScoreLabels.put(player, scoreLabel);
+                        playerScores.put(player, 0); // Početni score
+                    }
+                }
+            }
+
+
         } else {
             System.out.println("AnchorPane za crtice ili template labela nisu pronađeni na sceni.");
         }
@@ -286,19 +301,26 @@ public class Main extends Application {
 
     public void updateWordDisplay(String guessedLetter) {
         char guessedChar = guessedLetter.charAt(0);
+        int occurrences = 0;
 
+        // Prođi kroz reč i ažuriraj labelu za svako pojavljivanje slova
         for (int i = 0; i < word.length(); i++) {
             char currentChar = word.charAt(i);
-
             if (currentChar == guessedChar) {
                 String key = findLabelKey(i);
                 if (key != null) {
                     Label label = crticeMap.get(key);
                     label.setText(String.valueOf(guessedChar));
+                    occurrences++;
                 }
             }
         }
+
+        if (occurrences > 0) {
+            updateScore(getUsername(), 10 * occurrences);  // Dodaj 10 poena za svako pojavljivanje slova
+        }
     }
+
 
     private String findLabelKey(int index) {
         double spacing = 40;
@@ -354,13 +376,26 @@ public class Main extends Application {
     }
 
 
-    public void showEndMessage(String message){
+    public void showEndMessage(String winner, int score){
         Platform.runLater(() -> {
+            String message;
+            if (winner.equals(getUsername())) {
+                message = "CONGRATULATIONS! You won! Your score is " + score;
+            } else {
+                message = "GOOD GAME! The winner is " + winner.toUpperCase() + ".";
+            }
             Alert alert = new Alert(Alert.AlertType.INFORMATION, message, ButtonType.OK);
-            alert.setTitle("");
+            alert.setTitle("End of the Game");
             alert.setHeaderText(null);
             alert.showAndWait();
         });
+    }
+
+    private void showEndMessage2(){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, "Oops, game over! You lost!", ButtonType.OK);
+        alert.setTitle("End of the Game");
+        alert.setHeaderText(null);
+        alert.showAndWait();
     }
 
     public void showIncorrectGuessMessage(String letter) {
@@ -374,7 +409,7 @@ public class Main extends Application {
             updateHangmanDisplay();
 
             if (incorrectAttempts >= MAX_ATTEMPTS) {
-                showEndMessage("Oops, game over! You lost!");
+                showEndMessage2();
             }
         });
     }
@@ -408,5 +443,33 @@ public class Main extends Application {
         dugme.setDisable(true);
         return dugme;
     }
+
+    public void updateScore(String player, int scoreChange) {
+        Scene currentScene = primaryStage.getScene();
+
+        Label scoreLabel = (Label) currentScene.lookup("#labelScore");
+
+        if (scoreLabel != null) {
+            String text = scoreLabel.getText();
+            int currentScore = 0;
+            try {
+                currentScore = Integer.parseInt(text.trim());
+            } catch (NumberFormatException e) {
+                System.err.println("Greška u parsiranju trenutnog rezultata: " + e.getMessage());
+            }
+
+            int newScore = currentScore + scoreChange;
+            playerScores.put(player, newScore);
+
+            Platform.runLater(() -> scoreLabel.setText(String.valueOf(newScore)));
+        } else {
+            System.err.println("Labela za rezultat nije pronađena u trenutnoj sceni.");
+        }
+    }
+    public int getPlayerScore(String playerName) {
+        return playerScores.getOrDefault(playerName, 0);
+    }
+
+
 
 }

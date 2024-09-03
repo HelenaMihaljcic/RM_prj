@@ -105,6 +105,7 @@ final class ClientReadThread extends Thread {
                     Platform.runLater(() -> {
                         if (player.equals(main.getUsername())) {
                             main.showIncorrectGuessMessage(letter);
+                            main.updateScore(player, -5);  // Oduzmite 5 poena za pogrešan odgovor
                         }
                     });
                 } else if (response.startsWith("end WIN ")) {
@@ -113,16 +114,10 @@ final class ClientReadThread extends Thread {
 
                 if (parts.length == 4) {
                     String winner = parts[2];
-                    String message;
+                    int winnerScore = main.getPlayerScore(winner);
 
-                    if (winner.equals(main.getUsername())) {
-                        message = "Čestitamo! Vi ste pobednik!";
-                    } else {
-                        message = "Nažalost, izgubili ste. Pobednik je " + winner.toUpperCase() + ".";
-                    }
+                    Platform.runLater(() -> main.showEndMessage(winner, winnerScore));
 
-                    String finalMessage = message;
-                    Platform.runLater(() -> main.showEndMessage(finalMessage));
                 } else {
                     System.err.println("Greška u formatu poruke o kraju igre.");
                 }
