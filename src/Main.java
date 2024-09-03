@@ -15,15 +15,11 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.io.PipedReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class Main extends Application {
-    private static final String FILE_NAME = "data.txt";
     public Button unesiIme;
-    private String word, category;
-    private List<Label> listaCrtica = new ArrayList<>();
+    private String word;
 
     @FXML
     private ListView<String> igraciLV; // za prikazivanje igraca na pocetku
@@ -47,14 +43,22 @@ public class Main extends Application {
     private QuadCurve usne;
     @FXML
     private Button A, B, C, Č, Ć, D, Dž, Đ, E, F, G, H, I, J, K, L, Lj, M, N, Nj, O, P, R, S, Š, T, U, V, Z, Ž;
-    private Scene pocetna;
     private Stage primaryStage;
-    private ChatClient chatClient, currentClient;
+    private ChatClient chatClient;
     private Parent root;
     private String guessedLetter;
     private String playerName;
-    private List<String> letters = new ArrayList<>();
     private static ChatServer chatServer;
+    private Map<String, Label> crticeMap = new HashMap<>();
+    private int incorrectAttempts = 0;
+    private static final int MAX_ATTEMPTS = 10;
+
+
+
+
+    public String getUsername() {
+        return this.nameTF.getText().trim();
+    }
 
 
     @Override
@@ -69,6 +73,7 @@ public class Main extends Application {
 
         stage.show();
 
+
         primaryStage.setOnCloseRequest(event -> {
             ChatClient chatClient = ChatClientManager.getInstance();
             if (chatClient != null && chatClient.isAlive()) {
@@ -79,10 +84,6 @@ public class Main extends Application {
     }
 
     public static void main(String[] args) {
-
-        //categoryWords = new CategoryWords(FILE_NAME);
-
-        chatServer = ChatServer.getInstance();
         launch(args);
     }
 
@@ -104,19 +105,30 @@ public class Main extends Application {
 
 
     public void startGame(String word, String category, String startPlayer) {
-
-
         Scene currentScene = primaryStage.getScene();
         if (currentScene == null) {
             System.err.println("Error: currentScene is null");
             return;
         }
 
-        AnchorPane wordsAP = (AnchorPane) currentScene.lookup("#wordsAP");
-        Label crticaLabel = (Label) currentScene.lookup("#crticaLabel");
+        this.word = word.toLowerCase();
+
+        wordsAP = (AnchorPane) currentScene.lookup("#wordsAP");
+        crticaLabel = (Label) currentScene.lookup("#crticaLabel");
         Label labelCategory = (Label) currentScene.lookup("#labelCategory");
         labelTurn = (Label) currentScene.lookup("#labelTurn");
         labelName = (Label) currentScene.lookup("#labelName");
+        glava = (Circle) currentScene.lookup("#glava");
+        tijelo = (Line) currentScene.lookup("#tijelo");
+        lijevaRuka = (Line) currentScene.lookup("#lijevaRuka");
+        desnaRuka = (Line) currentScene.lookup("#desnaRuka");
+        lijevaNoga = (Line) currentScene.lookup("#lijevaNoga");
+        desnaNoga = (Line) currentScene.lookup("#desnaNoga");
+        lijevoOko = (Circle) currentScene.lookup("#lijevoOko");
+        desnoOko = (Circle) currentScene.lookup("#desnoOko");
+        nos = (Line) currentScene.lookup("#nos");
+        usne = (QuadCurve) currentScene.lookup("#usne");
+
 
         if (labelCategory != null) {
             labelCategory.setText(category);
@@ -132,48 +144,46 @@ public class Main extends Application {
 
         System.out.println("Kategorija: " + category + " rijec: " + word);
 
-
         if (wordsAP != null && crticaLabel != null) {
             wordsAP.getChildren().clear();
-            listaCrtica.clear();
+            crticeMap.clear();
 
-            double spacing = 40; // Razmak između crtica
-            double totalWidth = word.length() * spacing; // Ukupna širina crtica
+            double spacing = 40;
+            double initialLayoutY = crticaLabel.getLayoutY();
 
-            double layoutX = (wordsAP.getWidth() - totalWidth) / 2;
-            double layoutY = crticaLabel.getLayoutY();
+            String[] words = word.split(" ");
+            double layoutY = initialLayoutY;
 
-            for (int i = 0; i < word.length(); i++) {
-                Label dash;
-                if(word.charAt(i) == ' '){
-                    dash = new Label(" ");
-                }else{
-                    dash = new Label("_");
+            for (String singleWord : words) {
+                double totalWidth = singleWord.length() * spacing;
+                double layoutX = (wordsAP.getWidth() - totalWidth) / 2; // Centriraj crtice u svakom redu
+
+                for (int i = 0; i < singleWord.length(); i++) {
+                    Label dash = new Label("_");
+                    dash.setLayoutX(layoutX + i * spacing);
+                    dash.setLayoutY(layoutY);
+                    dash.setStyle("-fx-font-size: 40px; -fx-text-fill: white; -fx-font-family: 'Dialog'; -fx-alignment: center;");
+                    dash.setVisible(true);
+                    wordsAP.getChildren().add(dash);
+
+                    // Koristimo format "red, pozicija u redu" kao ključ
+                    crticeMap.put(layoutY + "," + (layoutX + i * spacing), dash);
                 }
-                letters.add(dash.getText());
-                dash.setLayoutX(layoutX + i * spacing);
-                dash.setLayoutY(layoutY);
-                dash.setStyle("-fx-font-size: 40px; -fx-text-fill: white; -fx-font-family: 'Dialog'; -fx-alignment: center;");
-                dash.setVisible(true);
-                wordsAP.getChildren().add(dash);
-                listaCrtica.add(dash);
+                // Prelazi u novi red za svaku reč
+                layoutY += 35;
             }
         } else {
             System.out.println("AnchorPane za crtice ili template labela nisu pronađeni na sceni.");
         }
     }
 
+
     @FXML
     public void ConnectUser(ActionEvent event) {
-        this.chatClient = new ChatClient("localhost", 12345, this, nameTF.getText().trim());
-        ChatClientManager.setInstance(chatClient);
-        this.chatClient.start();
-
-        this.currentClient = chatClient;
-
         this.playerName = nameTF.getText().trim();
         this.chatClient = new ChatClient("localhost", 12345, this, playerName);
-        this.chatClient.start(); // Start the ChatClient thread
+        ChatClientManager.setInstance(chatClient);
+        this.chatClient.start();
 
         unesiIme.setDisable(true);
     }
@@ -185,9 +195,7 @@ public class Main extends Application {
         });
     }
 
-    public String getUsername() {
-        return this.nameTF.getText().trim();
-    }
+
 
 
     public void receivedRequest(String fromUser) {
@@ -202,19 +210,12 @@ public class Main extends Application {
 
             alert.getButtonTypes().setAll(acceptButton, declineButton);
             Optional<ButtonType> result = alert.showAndWait();
-            /*
+
             if (result.isPresent() && result.get() == acceptButton) {
                 chatClient.sendMessage("REQUEST_ACCEPTED " + fromUser);
 
             } else {
                 chatClient.sendMessage("REQUEST_DECLINED " + fromUser);
-            }
-
-             */
-            if (result.isPresent() && result.get() == acceptButton) {
-                ChatClientManager.getInstance().sendMessage("REQUEST_ACCEPTED " + fromUser);
-            } else {
-                ChatClientManager.getInstance().sendMessage("REQUEST_DECLINED " + fromUser);
             }
         });
     }
@@ -252,17 +253,6 @@ public class Main extends Application {
         });
     }
 
-    public void getGuessedLetter(ActionEvent event) {
-        Object source = event.getSource();
-
-        if (source instanceof Button) {
-            Button button = (Button) source;
-            String letter = button.getText();
-            this.guessedLetter = letter;
-        }
-
-
-    }
 
     public void sendMessageGUI(ActionEvent event){
 
@@ -287,93 +277,121 @@ public class Main extends Application {
         return primaryStage;
     }
 
-    //dodaje se na gui za dugmadi
     @FXML
     private void handleLetterGuess(ActionEvent event) {
         Button clickedButton = (Button) event.getSource();
         String guessedLetter = clickedButton.getText();
-        ChatClientManager.getInstance().sendMessage("/letter " + guessedLetter);
+        ChatClientManager.getInstance().sendMessage("/letter " + guessedLetter); //salje serveru!
     }
 
+    public void updateWordDisplay(String guessedLetter) {
+        char guessedChar = guessedLetter.charAt(0);
 
-    public void updateWordDisplay(String guessedWord) {
-        for (int i = 0; i < guessedWord.length(); i++) {
-            char ch = guessedWord.charAt(i);
-            Label label = listaCrtica.get(i);
-            label.setText(String.valueOf(ch));
-        }
-    }
+        for (int i = 0; i < word.length(); i++) {
+            char currentChar = word.charAt(i);
 
-    public void handleServerMessage(String message) {
-        if (message.startsWith("correctLetter")) {
-            String letter = message.substring("correctLetter ".length());
-            updateWordDisplay(letter);
-        } else if (message.startsWith("incorrectLetter")) {
-            String letter = message.substring("incorrectLetter ".length());
-            updateWordDisplay(letter);
-        } else if (message.startsWith("end")) {
-            String result = message.substring("end ".length());
-            if (result.equals("WIN")) {
-                //showEndMessage("Congratulations! You won!");
-            } else if (result.equals("LOSS")) {
-                //showEndMessage("Game over! You lost!");
+            if (currentChar == guessedChar) {
+                String key = findLabelKey(i);
+                if (key != null) {
+                    Label label = crticeMap.get(key);
+                    label.setText(String.valueOf(guessedChar));
+                }
             }
         }
     }
+
+    private String findLabelKey(int index) {
+        double spacing = 40;
+        double layoutY = crticaLabel.getLayoutY();
+        int wordIndex = 0;
+
+        for (String singleWord : word.split(" ")) {
+            if (index >= wordIndex && index < wordIndex + singleWord.length()) {
+                double layoutX = (wordsAP.getWidth() - singleWord.length() * spacing) / 2;
+                return layoutY + "," + (layoutX + (index - wordIndex) * spacing);
+            }
+            wordIndex += singleWord.length() + 1; // +1 za razmak
+            layoutY += 35;
+        }
+        return null;
+    }
+
+    private void updateHangmanDisplay() {
+        switch (incorrectAttempts) {
+            case 1:
+                glava.setVisible(true);
+                break;
+            case 2:
+                tijelo.setVisible(true);
+                break;
+            case 3:
+                lijevaRuka.setVisible(true);
+                break;
+            case 4:
+                desnaRuka.setVisible(true);
+                break;
+            case 5:
+                lijevaNoga.setVisible(true);
+                break;
+            case 6:
+                desnaNoga.setVisible(true);
+                break;
+            case 7:
+                lijevoOko.setVisible(true);
+                break;
+            case 8:
+                desnoOko.setVisible(true);
+                break;
+            case 9:
+                nos.setVisible(true);
+                break;
+            case 10:
+                usne.setVisible(true);
+                break;
+            default:
+                break;
+        }
+    }
+
+
+    public void showEndMessage(String message){
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, message, ButtonType.OK);
+            alert.setTitle("");
+            alert.setHeaderText(null);
+            alert.showAndWait();
+        });
+    }
+
+    public void showIncorrectGuessMessage(String letter) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.WARNING, "Incorrect guess: " + letter, ButtonType.OK);
+            alert.setTitle("Incorrect Guess");
+            alert.setHeaderText(null);
+            alert.showAndWait();
+
+            incorrectAttempts++;
+            updateHangmanDisplay();
+
+            if (incorrectAttempts >= MAX_ATTEMPTS) {
+                showEndMessage("Oops, game over! You lost!");
+            }
+        });
+    }
+
 
 
     public void setTurnLabel(String message){
         labelTurn.setText(message);
     }
 
-    public void updateDash(String letter, int position){
-        letters.set(position, letter);
-    }
-
-    public void updateGUIDash() {
-        Platform.runLater(() -> {
-            // Get the current scene
-            Scene currentScene = primaryStage.getScene();
-            if (currentScene == null) {
-                System.err.println("Error: currentScene is null");
-                return;
-            }
-
-            // Find the AnchorPane and the labels for dashes
-            AnchorPane wordsAP = (AnchorPane) currentScene.lookup("#wordsAP");
-            if (wordsAP == null) {
-                System.err.println("Error: wordsAP is null");
-                return;
-            }
-
-            // Clear existing children in wordsAP
-            wordsAP.getChildren().clear();
-
-            // Calculate spacing and layout
-            double spacing = 40;
-            double totalWidth = letters.size() * spacing;
-            double layoutX = (wordsAP.getWidth() - totalWidth) / 2;
-            double layoutY = 40; // Adjust based on your layout
-
-            // Create and add new labels based on the updated letters list
-            for (int i = 0; i < letters.size(); i++) {
-                Label dash = new Label(letters.get(i));
-                dash.setLayoutX(layoutX + i * spacing);
-                dash.setLayoutY(layoutY);
-                dash.setStyle("-fx-font-size: 40px; -fx-text-fill: white; -fx-font-family: 'Dialog'; -fx-alignment: center;");
-                dash.setVisible(true);
-                wordsAP.getChildren().add(dash);
-            }
-        });
-    }
 
 
     public void showNotYourTurnAlert() {
-        // Ensure GUI updates are done on the JavaFX Application Thread
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.WARNING, "It's not your turn!", ButtonType.OK);
             alert.setTitle("Turn Notification");
-            alert.setHeaderText(null); // Optionally set header text
+            alert.setHeaderText(null);
             alert.showAndWait();
         });
     }
@@ -384,5 +402,11 @@ public class Main extends Application {
         });
     }
 
+
+    Button getButtonById(String id) {
+        Button dugme =  (Button) primaryStage.getScene().lookup("#" + id);
+        dugme.setDisable(true);
+        return dugme;
+    }
 
 }

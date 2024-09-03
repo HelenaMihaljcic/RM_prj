@@ -13,9 +13,8 @@ import java.util.stream.Collectors;
 
 final class ChatServer {
     static final int SERVER_TEST_PORT = 12345;
-    private static ChatServer instance;
     private static Map<String, List<String>> kategorijeMap = new HashMap<>();
-    private final Map<String, HangmanGame> activeGames = new HashMap<>(); // Dodata promenljiva za aktivne igre
+    private final Map<String, HangmanGame> activeGames = new HashMap<>();
     private static BufferedReader fromUser;
     private static PrintWriter toUser;
 
@@ -33,9 +32,7 @@ final class ChatServer {
         this.users = Collections.synchronizedSet(new HashSet<>());
         this.privateChatRooms = Collections.synchronizedMap(new HashMap<>());
     }
-    public static ChatServer getInstance() {
-        return instance;
-    }
+
 
     void execute() {
         try (ServerSocket server = new ServerSocket(port)) {
@@ -200,10 +197,9 @@ final class ChatServer {
 
         if (senderThread != null && receiverThread != null) {
             hangmanGame = new HangmanGame(senderThread, receiverThread, word, this);
-            HangmanGame game = new HangmanGame(senderThread, receiverThread, word, this);
             createPrivateChatRoom(sender, senderThread, receiverThread);
-            senderThread.setHangmanGame(game);
-            receiverThread.setHangmanGame(game);
+            senderThread.setHangmanGame(hangmanGame);
+            receiverThread.setHangmanGame(hangmanGame);
             senderThread.setInHangmanGame(true);
             receiverThread.setInHangmanGame(true);
 
@@ -214,39 +210,15 @@ final class ChatServer {
         }
     }
 
-    private void handleHangmanGuess2(String message) {
-        String guessedLetter = message.substring(8).trim();
-        UserThread sender = getUserByName(message.split(" ")[1]);
-
-        if (sender != null) {
-            sender.sendMessage("LETTER " + guessedLetter);
-        }
-    }
 
     public void handleHangmanGuess(String message, UserThread sender) {
         if (message.startsWith("/letter ")) {
             String guess = message.substring(8).trim();
-            System.out.println(guess); //dobro dodje serveru!
+            //System.out.println(guess); dobro dodje serveru!
             hangmanGame.guessLetter(sender, guess);
-            /*
-            if (correct) {
-                sender.sendMessage("Correct guess!");
-            } else {
-                sender.sendMessage("Incorrect guess. Try again.");
-            }
-
-             */
         } else if (message.startsWith("/word ")) {
             String guess = message.substring(6).trim();
             hangmanGame.guessWord(sender, guess);
-            /*
-            if (correct) {
-                sender.sendMessage("Congratulations, you guessed the word!");
-            } else {
-                sender.sendMessage("Wrong word. Keep guessing.");
-            }
-
-             */
         }
     }
 

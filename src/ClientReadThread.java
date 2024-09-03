@@ -1,6 +1,7 @@
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
 import java.io.BufferedReader;
@@ -76,7 +77,57 @@ final class ClientReadThread extends Thread {
                 } else if (response.startsWith("/msg")) {
                     String[] msg = response.split(":");
                     main.updateChat("["+msg[1]+"]: " + msg[2]);
+
+                } else if (response.startsWith("disableButton ")) {
+                    String[] parts = response.split(" ");
+                    String letter = parts[1];
+                    Platform.runLater(() -> {
+                        Button button = main.getButtonById(letter);
+                        if (button != null) {
+                            button.setDisable(true);
+                        }
+                    });
+                } else if (response.startsWith("correctLetter ")) {
+                    String[] parts = response.split(" ");
+                    String player = parts[2];
+                    String letter = parts[1];
+
+                    Platform.runLater(() -> {
+                        if (player.equals(main.getUsername())) {
+                            main.updateWordDisplay(letter);
+                        }
+                    });
+                }  else if (response.startsWith("incorrectLetter ")) {
+                    String[] parts = response.split(" ");
+                    String player = parts[2];
+                    String letter = parts[1];
+
+                    Platform.runLater(() -> {
+                        if (player.equals(main.getUsername())) {
+                            main.showIncorrectGuessMessage(letter);
+                        }
+                    });
+                } else if (response.startsWith("end WIN ")) {
+
+                String[] parts = response.split(" ");
+
+                if (parts.length == 4) {
+                    String winner = parts[2];
+                    String message;
+
+                    if (winner.equals(main.getUsername())) {
+                        message = "Čestitamo! Vi ste pobednik!";
+                    } else {
+                        message = "Nažalost, izgubili ste. Pobednik je " + winner.toUpperCase() + ".";
+                    }
+
+                    String finalMessage = message;
+                    Platform.runLater(() -> main.showEndMessage(finalMessage));
                 } else {
+                    System.err.println("Greška u formatu poruke o kraju igre.");
+                }
+            }
+            else {
                     System.out.println("\r" + response);
                     System.out.printf("\r[%s]: ", this.username);
                 }
