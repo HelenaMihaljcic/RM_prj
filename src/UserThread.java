@@ -27,6 +27,10 @@ final class UserThread extends Thread {
         this.username = username;
     }
 
+    public PrintWriter getToUser() {
+        return toUser;
+    }
+
     @Override
     public void run() {
         try {
@@ -55,7 +59,7 @@ final class UserThread extends Thread {
                     handlePrivateChatRejection();
                 } else if (clientMessage.startsWith("/letter ") || clientMessage.startsWith("/word ")) {
                     if (inHangmanGame) {
-                        handleHangmanGuess(clientMessage);
+                        server.handleHangmanGuess(clientMessage, this);
                     } else {
                         sendMessage("You are not in a game.");
                     }
@@ -93,6 +97,7 @@ final class UserThread extends Thread {
         }
     }
 
+    /*
     private void handlePrivateChatAcceptance() {
         if (pendingRequestFrom != null) {
             this.inHangmanGame = true;
@@ -110,6 +115,10 @@ final class UserThread extends Thread {
             sendMessage("No pending game requests.");
         }
     }
+
+
+     */
+
 
     private void handlePrivateChatRejection() {
         if (pendingRequestFrom != null) {

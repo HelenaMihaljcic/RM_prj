@@ -1,3 +1,5 @@
+import javafx.application.Platform;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -81,7 +83,9 @@ public final class ChatClient extends Thread {
         }
     }
 
-    public String getName2() {
-        return name;
+    private void handleServerMessage(String message) {
+        // Prosledi poruku `Main` klasi za dalju obrada
+        Platform.runLater(() -> main.handleServerMessage(message));
     }
+
 }

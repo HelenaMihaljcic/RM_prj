@@ -15,12 +15,15 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.io.PipedReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class Main extends Application {
     private static final String FILE_NAME = "data.txt";
     public Button unesiIme;
     private String word, category;
+    private List<Label> listaCrtica = new ArrayList<>();
 
     @FXML
     private ListView<String> igraciLV; // za prikazivanje igraca na pocetku
@@ -35,7 +38,7 @@ public class Main extends Application {
     @FXML
     private AnchorPane hangmanAP, wordsAP; //anchor za covjeka - napraviti transparentno, wordsAP za crtice
     @FXML
-    private Label crticaLabel; //TODO: ZA KOPIRANJE CRTICA
+    private Label crticaLabel;
     @FXML
     private Line lijevaNoga, desnaNoga, lijevaRuka, desnaRuka, tijelo, nos;
     @FXML
@@ -45,7 +48,7 @@ public class Main extends Application {
     private static CategoryWords categoryWords;
     private Scene pocetna;
     private Stage primaryStage;
-    private ChatClient chatClient;
+    private ChatClient chatClient, currentClient;
     private Parent root;
 
 
@@ -61,8 +64,8 @@ public class Main extends Application {
 
         stage.show();
 
-        // Add a shutdown hook to handle client cleanup
         primaryStage.setOnCloseRequest(event -> {
+            ChatClient chatClient = ChatClientManager.getInstance();
             if (chatClient != null && chatClient.isAlive()) {
                 chatClient.shutdown();
             }
@@ -71,16 +74,10 @@ public class Main extends Application {
     }
 
     public static void main(String[] args) {
-        categoryWords = new CategoryWords(FILE_NAME);
+        //categoryWords = new CategoryWords(FILE_NAME);
         launch(args);
     }
 
-
-    private String trenutniKorisnik;
-
-    public void setTrenutniKorisnik(String trenutniKorisnik) {
-        this.trenutniKorisnik = trenutniKorisnik;
-    }
 
     public void switchToGameScene(String category, String word) throws IOException {
         try {
@@ -107,7 +104,6 @@ public class Main extends Application {
             return;
         }
 
-        // Pronalaženje elemenata u trenutnoj sceni
         AnchorPane wordsAP = (AnchorPane) currentScene.lookup("#wordsAP");
         Label crticaLabel = (Label) currentScene.lookup("#crticaLabel");
         Label labelCategory = (Label) currentScene.lookup("#labelCategory");
@@ -123,6 +119,7 @@ public class Main extends Application {
 
         if (wordsAP != null && crticaLabel != null) {
             wordsAP.getChildren().clear();
+            listaCrtica.clear();
 
             double spacing = 40; // Razmak između crtica
             double totalWidth = word.length() * spacing; // Ukupna širina crtica
@@ -137,6 +134,7 @@ public class Main extends Application {
                 dash.setStyle("-fx-font-size: 40px; -fx-text-fill: white; -fx-font-family: 'Dialog'; -fx-alignment: center;");
                 dash.setVisible(true);
                 wordsAP.getChildren().add(dash);
+                listaCrtica.add(dash);
             }
         } else {
             System.out.println("AnchorPane za crtice ili template labela nisu pronađeni na sceni.");
@@ -146,9 +144,10 @@ public class Main extends Application {
     @FXML
     public void ConnectUser(ActionEvent event) {
         this.chatClient = new ChatClient("localhost", 12345, this, nameTF.getText().trim());
-        this.chatClient.start(); // Start the ChatClient thread
+        ChatClientManager.setInstance(chatClient);
+        this.chatClient.start();
 
-        setTrenutniKorisnik(this.chatClient.getName2());
+        this.currentClient = chatClient;
 
         unesiIme.setDisable(true);
     }
@@ -164,6 +163,7 @@ public class Main extends Application {
         return this.nameTF.getText().trim();
     }
 
+
     public void receivedRequest(String fromUser) {
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -176,11 +176,19 @@ public class Main extends Application {
 
             alert.getButtonTypes().setAll(acceptButton, declineButton);
             Optional<ButtonType> result = alert.showAndWait();
+            /*
             if (result.isPresent() && result.get() == acceptButton) {
                 chatClient.sendMessage("REQUEST_ACCEPTED " + fromUser);
 
             } else {
                 chatClient.sendMessage("REQUEST_DECLINED " + fromUser);
+            }
+
+             */
+            if (result.isPresent() && result.get() == acceptButton) {
+                ChatClientManager.getInstance().sendMessage("REQUEST_ACCEPTED " + fromUser);
+            } else {
+                ChatClientManager.getInstance().sendMessage("REQUEST_DECLINED " + fromUser);
             }
         });
     }
@@ -226,12 +234,37 @@ public class Main extends Application {
 
     @FXML
     private void handleLetterGuess(ActionEvent event) {
-        System.out.println(trenutniKorisnik);
-
         Button clickedButton = (Button) event.getSource();
         String guessedLetter = clickedButton.getText();
-        this.chatClient.sendMessage("/letter " + guessedLetter); //ne zna se koji igrac salje slovo
-        //System.out.println(guessedLetter);
+        ChatClientManager.getInstance().sendMessage("/letter " + guessedLetter);
     }
+
+
+    public void updateWordDisplay(String guessedWord) {
+        for (int i = 0; i < guessedWord.length(); i++) {
+            char ch = guessedWord.charAt(i);
+            Label label = listaCrtica.get(i);
+            label.setText(String.valueOf(ch));
+        }
+    }
+
+    public void handleServerMessage(String message) {
+        if (message.startsWith("correctLetter")) {
+            String letter = message.substring("correctLetter ".length());
+            updateWordDisplay(letter);
+        } else if (message.startsWith("incorrectLetter")) {
+            String letter = message.substring("incorrectLetter ".length());
+            updateWordDisplay(letter);
+        } else if (message.startsWith("end")) {
+            String result = message.substring("end ".length());
+            if (result.equals("WIN")) {
+                //showEndMessage("Congratulations! You won!");
+            } else if (result.equals("LOSS")) {
+                //showEndMessage("Game over! You lost!");
+            }
+        }
+    }
+
+
 
 }

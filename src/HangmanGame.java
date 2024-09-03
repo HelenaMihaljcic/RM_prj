@@ -1,120 +1,104 @@
 
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
-public class HangmanGame {
-    private static final String[] words = {"vanja", "sanja"};
-    private static final int MAX_ATTEMPTS = 7;
-
-    private final String word;
-    private String asterisk;
-    private int attempts;
-    private final UserThread player1;
+public class HangmanGame { private final UserThread player1;
     private final UserThread player2;
-    private UserThread currentPlayer;
+    private final String word;
+    private final Set<String> guessedLetters;
+    private boolean player1Turn;
+    private boolean gameEnded;
+    private String guessedWord;
+    private final ChatServer server;
 
-    public HangmanGame(UserThread player1, UserThread player2) {
-        this.word = words[new Random().nextInt(words.length)];
-        this.asterisk = new String(new char[word.length()]).replace("\0", "*");
-        this.attempts = 0;
+    public HangmanGame(UserThread player1, UserThread player2, String word, ChatServer server) {
         this.player1 = player1;
         this.player2 = player2;
-        this.currentPlayer = player1;
+        this.word = word.toLowerCase();
+        this.guessedLetters = new HashSet<>();
+        this.guessedWord = "_".repeat(word.length());
+        this.player1Turn = true; // player1 starts
+        this.gameEnded = false;
+        this.server = server;
     }
 
-    public void startGame() {
-        player1.sendMessage("Game started! The word is: " + asterisk);
-        player2.sendMessage("Game started! The word is: " + asterisk);
-        currentPlayer.sendMessage("It's your turn to guess a letter or word.");
-    }
-
-    public void guessLetter(UserThread player, String guess) {
-        if (player != currentPlayer) {
-            player.sendMessage("It's not your turn!");
+    public void guessLetter(UserThread player, String letter) {
+        if (!playerTurn(player)) {
+            server.sendMessageToUser(player, "NOT TURN");
             return;
         }
 
-        String newAsterisk = "";
-        for (int i = 0; i < word.length(); i++) {
-            if (word.charAt(i) == guess.charAt(0)) {
-                newAsterisk += guess.charAt(0);
-            } else if (asterisk.charAt(i) != '*') {
-                newAsterisk += word.charAt(i);
-            } else {
-                newAsterisk += "*";
-            }
+        if (gameEnded) {
+            server.sendMessageToUser(player, "END");
+            return;
         }
 
-        if (asterisk.equals(newAsterisk)) {
-            attempts++;
-            hangmanImage();
+        letter = letter.toLowerCase();
+
+
+        if (word.indexOf(letter) >= 0) {
+            guessedLetters.add(letter);
+            updateGuessedWord();
+            notifyPlayers("correctLetter " + letter);
         } else {
-            asterisk = newAsterisk;
-            if (asterisk.equals(word)) {
-                player1.sendMessage("Correct! You win! The word was " + word);
-                player2.sendMessage("Correct! You win! The word was " + word);
-                endGame();
-                return;
-            }
+            notifyPlayers("incorrectLetter " + letter);
         }
 
-        if (attempts >= MAX_ATTEMPTS) {
-            player1.sendMessage("GAME OVER! The word was " + word);
-            player2.sendMessage("GAME OVER! The word was " + word);
-            endGame();
-            return;
-        }
-
-        switchPlayer();
+        checkGameEnd();
+        switchTurn();
     }
 
     public void guessWord(UserThread player, String guess) {
-        if (player != currentPlayer) {
-            player.sendMessage("It's not your turn!");
+        if (!playerTurn(player)) {
+            player.sendMessage("It's not your turn.");
+            return;
+        }
+
+        if (gameEnded) {
+            player.sendMessage("The game has already ended.");
             return;
         }
 
         if (guess.equals(word)) {
-            player1.sendMessage("Correct! You win! The word was " + word);
-            player2.sendMessage("Correct! You win! The word was " + word);
-            endGame();
+            gameEnded = true;
+            notifyPlayers("end WIN");
         } else {
-            attempts++;
-            hangmanImage();
-            if (attempts >= MAX_ATTEMPTS) {
-                player1.sendMessage("GAME OVER! The word was " + word);
-                player2.sendMessage("GAME OVER! The word was " + word);
-                endGame();
-                return;
-            }
-            switchPlayer();
+            notifyPlayers("end LOSS");
         }
     }
 
-    private void switchPlayer() {
-        currentPlayer = (currentPlayer == player1) ? player2 : player1;
-        currentPlayer.sendMessage("It's your turn to guess a letter or word.");
+    private boolean playerTurn(UserThread player) {
+        return (player == player1 && player1Turn) || (player == player2 && !player1Turn);
     }
 
-    private void hangmanImage() {
-        String[] hangmanStages = {
-                "Wrong guess, try again",
-                "Wrong guess, try again\n\n\n\n\n___|___",
-                "Wrong guess, try again\n   |\n   |\n   |\n   |\n   |\n   |\n   |\n___|___",
-                "Wrong guess, try again\n   ____________\n   |\n   |\n   |\n   |\n   |\n   |\n   |\n___|___",
-                "Wrong guess, try again\n   ____________\n   |          _|_\n   |         /   \\\n   |        |     |\n   |         \\_ _/\n   |\n   |\n   |\n___|___",
-                "Wrong guess, try again\n   ____________\n   |          _|_\n   |         /   \\\n   |        |     |\n   |         \\_ _/\n   |           |\n   |           |\n   |\n___|___",
-                "Wrong guess, try again\n   ____________\n   |          _|_\n   |         /   \\\n   |        |     |\n   |         \\_ _/\n   |           |\n   |           |\n   |          / \\\n___|___      /   \\",
-                "GAME OVER!\n   ____________\n   |          _|_\n   |         /   \\\n   |        |     |\n   |         \\_ _/\n   |          _|_\n   |         / | \\\n   |          / \\\n___|___      /   \\"
-        };
-
-        player1.sendMessage(hangmanStages[attempts]);
-        player2.sendMessage(hangmanStages[attempts]);
+    private void switchTurn() {
+        player1Turn = !player1Turn;
+        notifyPlayers("/turn :" + (player1Turn ? player1.getNickname() : player2.getNickname()));
     }
 
-    private void endGame() {
-        player1.setInHangmanGame(false);
-        player2.setInHangmanGame(false);
-        player1.setCurrentChatRoom(null);
-        player2.setCurrentChatRoom(null);
+    private void updateGuessedWord() {
+        StringBuilder updatedWord = new StringBuilder();
+        for (char c : word.toCharArray()) {
+            if (guessedLetters.contains(c)) {
+                updatedWord.append(c);
+            } else {
+                updatedWord.append("_");
+            }
+        }
+        guessedWord = updatedWord.toString();
+    }
+
+    private void checkGameEnd() {
+        if (!guessedWord.contains("_")) {
+            gameEnded = true;
+            notifyPlayers("end WIN");
+        }
+    }
+
+    private void notifyPlayers(String message) {
+        server.sendMessageToUser(player1, message);
+        server.sendMessageToUser(player2, message);
+
     }
 }

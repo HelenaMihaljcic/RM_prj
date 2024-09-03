@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 final class ChatServer {
     static final int SERVER_TEST_PORT = 12345;
     private static Map<String, List<String>> kategorijeMap = new HashMap<>();
+    private final Map<String, HangmanGame> activeGames = new HashMap<>(); // Dodata promenljiva za aktivne igre
 
     public static void main(String[] args) {
         ChatServer server = new ChatServer(SERVER_TEST_PORT);
@@ -42,7 +43,7 @@ final class ChatServer {
                 String username = fromUser.readLine();
                 System.out.println(username + " connected.");
 
-                // We dispatch a new thread for each user in the chat
+                // Kreirajte novu instancu UserThread za svakog korisnika
                 UserThread user = new UserThread(client, this, username);
                 this.users.add(user);
                 user.start();
@@ -127,7 +128,6 @@ final class ChatServer {
         return new String[]{randomCategory, randomWord};
     }
 
-
     private static void loadCategories(String folderPath) {
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(folderPath), "*.txt")) {
             for (Path entry : stream) {
@@ -151,6 +151,7 @@ final class ChatServer {
             senderThread.sendMessage("User not available.");
         }
     }
+    private HangmanGame hangmanGame;
 
     void handleGameAcceptance(String sender, String receiver) {
         String[] challenge = getRandomCategoryAndWord();
@@ -161,6 +162,7 @@ final class ChatServer {
         UserThread receiverThread = getUserByName(receiver);
 
         if (senderThread != null && receiverThread != null) {
+            hangmanGame = new HangmanGame(senderThread, receiverThread, word, this);
             // Create the game and start it
             senderThread.setInHangmanGame(true);
             receiverThread.setInHangmanGame(true);
@@ -172,18 +174,44 @@ final class ChatServer {
         }
     }
 
-
-    //SERVER NE ZNA KO JE POSLAO PORUKU - NE PAMTI SE IME IGRACA
-    private void handleHangmanGuess(String message) {
-        String guessedLetter = message.substring(8).trim(); // Izvaditi slovo iz poruke
+    private void handleHangmanGuess2(String message) {
+        String guessedLetter = message.substring(8).trim();
         UserThread sender = getUserByName(message.split(" ")[1]);
 
         if (sender != null) {
-            // Pošaljite slovo igraču
             sender.sendMessage("LETTER " + guessedLetter);
         }
     }
 
+    public void handleHangmanGuess(String message, UserThread sender) {
+        if (message.startsWith("/letter ")) {
+            String guess = message.substring(8).trim();
+            System.out.println(guess); //dobro dodje serveru!
+            hangmanGame.guessLetter(sender, guess);
+            /*
+            if (correct) {
+                sender.sendMessage("Correct guess!");
+            } else {
+                sender.sendMessage("Incorrect guess. Try again.");
+            }
 
+             */
+        } else if (message.startsWith("/word ")) {
+            String guess = message.substring(6).trim();
+            hangmanGame.guessWord(sender, guess);
+            /*
+            if (correct) {
+                sender.sendMessage("Congratulations, you guessed the word!");
+            } else {
+                sender.sendMessage("Wrong word. Keep guessing.");
+            }
 
+             */
+        }
+    }
+
+    public void sendMessageToUser(UserThread player1, String message) {
+        player1.getToUser().println(message);
+
+    }
 }
