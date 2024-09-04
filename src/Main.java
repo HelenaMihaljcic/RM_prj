@@ -46,7 +46,7 @@ public class Main extends Application {
     private Parent root;
     private String guessedLetter;
     private String playerName;
-    private static ChatServer chatServer;
+    private static ChatServer chatServer = ChatServer.returnInstance();
     private Map<String, Label> crticeMap = new HashMap<>();
     private int incorrectAttempts = 0;
     private static final int MAX_ATTEMPTS = 10;
@@ -64,6 +64,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+
         this.primaryStage = stage;
         stage.setTitle("HANGMAN");
 
@@ -85,6 +86,7 @@ public class Main extends Application {
     }
 
     public static void main(String[] args) {
+
         launch(args);
     }
 
@@ -195,7 +197,10 @@ public class Main extends Application {
 
     @FXML
     public void ConnectUser(ActionEvent event) {
+        Scene currentScene = igraciLV.getScene();
+        nameTF = (TextField) currentScene.lookup("#nameTF");
         this.playerName = nameTF.getText().trim();
+        System.out.println(this.playerName + "ANMEEE");
         this.chatClient = new ChatClient("localhost", 12345, this, playerName);
         ChatClientManager.setInstance(chatClient);
         this.chatClient.start();
@@ -209,8 +214,6 @@ public class Main extends Application {
             igraciLV.getItems().addAll(users);
         });
     }
-
-
 
 
     public void receivedRequest(String fromUser) {
@@ -273,9 +276,9 @@ public class Main extends Application {
 
         Scene currentScene = labelTurn.getScene();
 
-        chatTF = (TextField) currentScene.lookup("#nameTF");
-        String message = nameTF.getText();
-
+        chatTF = (TextField) currentScene.lookup("#chatTF");
+        String message = chatTF.getText();
+        System.out.println(this.playerName + "IME IGRACA");
         ChatRoom room = chatServer.getPrivateChatRoom(this.playerName);
         room.broadcast(this.playerName, message);
     }

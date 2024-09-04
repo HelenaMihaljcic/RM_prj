@@ -17,9 +17,14 @@ final class ChatServer {
     private final Map<String, HangmanGame> activeGames = new HashMap<>();
     private static BufferedReader fromUser;
     private static PrintWriter toUser;
+    private static ChatServer server = new ChatServer(SERVER_TEST_PORT);
 
     public static void main(String[] args) {
-        ChatServer server = new ChatServer(SERVER_TEST_PORT);
+
+        if(server == null){
+            System.out.println("JOOOOO");
+        }
+
         server.execute();
     }
 
@@ -105,6 +110,7 @@ final class ChatServer {
     }
 
     void createPrivateChatRoom(String roomName, UserThread user1, UserThread user2) {
+        System.out.println(roomName + "IME SOBE");
         ChatRoom chatRoom = new ChatRoom(roomName, user1, user2, this);
         privateChatRooms.put(roomName, chatRoom);
         user1.setCurrentChatRoom(chatRoom);
@@ -118,7 +124,11 @@ final class ChatServer {
             for (Map.Entry<String, ChatRoom> entry : privateChatRooms.entrySet()) {
                 // Check if the key (room name) contains the specified roomName
                 if (entry.getKey().contains(roomName)) {
+                    System.out.println(entry.getKey() + "NEKI KEY " + roomName);
                     // Return the matching ChatRoom
+                    if(entry.getValue() == null){
+                        System.out.println("NULLLLLAAAA");
+                    }
                     return entry.getValue();
                 }
             }
@@ -197,7 +207,7 @@ final class ChatServer {
 
         if (senderThread != null && receiverThread != null) {
             hangmanGame = new HangmanGame(senderThread, receiverThread, word, this);
-            createPrivateChatRoom(sender, senderThread, receiverThread);
+            createPrivateChatRoom(sender + receiver, senderThread, receiverThread);
             senderThread.setHangmanGame(hangmanGame);
             receiverThread.setHangmanGame(hangmanGame);
             senderThread.setInHangmanGame(true);
@@ -225,6 +235,10 @@ final class ChatServer {
     public void sendMessageToUser(UserThread player1, String message) {
         player1.getToUser().println(message);
 
+    }
+
+    public static synchronized ChatServer returnInstance() {
+        return server;
     }
 
 }
