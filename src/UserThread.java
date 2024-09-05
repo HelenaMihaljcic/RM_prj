@@ -68,8 +68,11 @@ final class UserThread extends Thread {
             System.out.println("Error in UserThread: " + ex.getMessage());
             ex.printStackTrace();
         } finally {
-            this.server.remove(this);
+            try {
+                this.server.remove(this);
+            }catch(NullPointerException e){
 
+            }
             try {
                 this.sock.close();
             } catch (IOException e) {
@@ -88,28 +91,7 @@ final class UserThread extends Thread {
         }
     }
 
-    /*
-    private void handlePrivateChatAcceptance() {
-        if (pendingRequestFrom != null) {
-            this.inHangmanGame = true;
-            pendingRequestFrom.inHangmanGame = true;
-            this.hangmanGame = new HangmanGame(this, pendingRequestFrom);
-            pendingRequestFrom.hangmanGame = this.hangmanGame;
-            this.hangmanGame.startGame();
 
-            // Notify both users about the game start
-            this.sendMessage("GAME_STARTED");
-            pendingRequestFrom.sendMessage("GAME_STARTED");
-
-            pendingRequestFrom = null;
-        } else {
-            sendMessage("No pending game requests.");
-        }
-    }
-
-
-
-     */
 
 
     private void handlePrivateChatRejection() {
@@ -120,27 +102,12 @@ final class UserThread extends Thread {
             sendMessage("No pending game requests.");
         }
     }
-    /*
-
-    private void handleHangmanGuess(String message) {
-        if (message.startsWith("/letter ")) {
-            String guess = message.substring(8).trim();
-            hangmanGame.guessLetter(this, guess);
-        } else if (message.startsWith("/word ")) {
-            String guess = message.substring(6).trim();
-            hangmanGame.guessWord(this, guess);
-        }
-    }
-
-     */
 
     void sendMessage(String message) {
         if (this.toUser != null)
             this.toUser.println(message);
     }
-    public void sendToServer(String message){
 
-    }
 
     String getNickname() {
         return this.username;

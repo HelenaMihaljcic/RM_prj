@@ -46,7 +46,14 @@ final class ClientReadThread extends Thread {
                     Platform.runLater(() -> {
                         main.updateUserList(userArray);
                     });
-                } else if (response.startsWith("/response ")) {
+                }else if (response.startsWith("UPDATE_USERS2")) {
+                    String users = response.substring(14);
+                    String[] userArray = users.split(",");
+                    Platform.runLater(() -> {
+                        // Update the user list in Main class with users not in a Hangman game
+                        main.updateUserList(userArray);
+                    });
+                }  else if (response.startsWith("/response ")) {
                     String fromUser = response.substring(10);
                     main.receivedRequest(fromUser);
                 } else if (response.startsWith("REQUEST_DECLINED")) {

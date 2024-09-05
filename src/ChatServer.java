@@ -74,6 +74,28 @@ final class ChatServer {
         }
     }
 
+    void sendToUsersNotInGame() {
+        List<String> userNames = getUserNames();
+
+        // Filter out users who are currently in a Hangman game
+        List<String> nonGameUserNames = userNames.stream()
+                .filter(userName -> {
+                    UserThread userThread = getUserByName(userName);
+                    return userThread != null && !userThread.isInHangmanGame();
+                })
+                .collect(Collectors.toList());
+
+        synchronized (this.users) {
+            for (UserThread user : users) {
+                if (!user.isInHangmanGame()) {
+                    user.sendMessage("UPDATE_USERS2 " + String.join(",", nonGameUserNames));
+                }
+            }
+        }
+    }
+
+
+
     public void broadcast(UserThread sender, String message) {
         synchronized (this.users) {
             this.users.stream()
@@ -112,7 +134,6 @@ final class ChatServer {
     void createPrivateChatRoom(String roomName, UserThread user1, UserThread user2) {
         ChatRoom chatRoom = new ChatRoom(roomName, user1, user2, this);
         privateChatRooms.put(roomName, chatRoom);
-        System.out.println(privateChatRooms);
         user1.setCurrentChatRoom(chatRoom);
         user2.setCurrentChatRoom(chatRoom);
     }
@@ -188,7 +209,6 @@ final class ChatServer {
             hangmanGame = new HangmanGame(senderThread, receiverThread, word, this);
             createPrivateChatRoom(sender + ":" + receiver, senderThread, receiverThread);
 
-            System.out.println(privateChatRooms);
             senderThread.setHangmanGame(hangmanGame);
             receiverThread.setHangmanGame(hangmanGame);
             senderThread.setInHangmanGame(true);
@@ -198,6 +218,9 @@ final class ChatServer {
             String gameStartMessage = "REQUEST_ACCEPTED:" + category + ":" + word + ":" + senderThread.getNickname();
             senderThread.sendMessage(gameStartMessage);
             receiverThread.sendMessage(gameStartMessage);
+
+            sendToUsersNotInGame();
+
         }
     }
 

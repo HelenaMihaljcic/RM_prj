@@ -213,7 +213,7 @@ public class Main extends Application {
         this.chatClient = new ChatClient("localhost", 12345, this, playerName);
         ChatClientManager.setInstance(chatClient);
         this.chatClient.start();
-
+        nameTF.setDisable(true);
         unesiIme.setDisable(true);
     }
 
