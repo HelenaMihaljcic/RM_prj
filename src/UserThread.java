@@ -51,15 +51,15 @@ final class UserThread extends Thread {
                     server.handleGameAcceptance(this.username, targetUsername);
                 } else if (clientMessage.startsWith("/reject")) {
                     handlePrivateChatRejection();
+                } else if (clientMessage.startsWith("/msg")) {
+                    String parts[] = clientMessage.split(":");
+                    server.handleSendMessageToRoom(parts[2].trim(), parts[1].trim());
                 } else if (clientMessage.startsWith("/letter ") || clientMessage.startsWith("/word ")) {
                     if (inHangmanGame) {
                         server.handleHangmanGuess(clientMessage, this);
                     } else {
                         sendMessage("You are not in a game.");
                     }
-                } else if (inHangmanGame) {
-                    currentChatRoom.broadcast(this.username, "[" + this.username + "]: " + clientMessage);
-
                 }
             } while (!clientMessage.equals("bye"));
 

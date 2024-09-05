@@ -13,6 +13,7 @@ import javafx.scene.shape.QuadCurve;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 
 public class Main extends Application {
@@ -199,8 +200,16 @@ public class Main extends Application {
     public void ConnectUser(ActionEvent event) {
         Scene currentScene = igraciLV.getScene();
         nameTF = (TextField) currentScene.lookup("#nameTF");
-        this.playerName = nameTF.getText().trim();
-        System.out.println(this.playerName + "ANMEEE");
+
+        setPlayerName(nameTF.getText().trim());
+        System.out.println("PLAYER NAME " + playerName);
+
+        if (playerName == null || playerName.isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Player name must be set before connecting!", ButtonType.OK);
+            alert.showAndWait();
+            return;
+        }
+
         this.chatClient = new ChatClient("localhost", 12345, this, playerName);
         ChatClientManager.setInstance(chatClient);
         this.chatClient.start();
@@ -262,6 +271,7 @@ public class Main extends Application {
 
 
     public void requestDeclined() {
+
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Request Declined");
@@ -272,15 +282,31 @@ public class Main extends Application {
     }
 
 
-    public void sendMessageGUI(ActionEvent event){
-
+    public void sendMessageGUI(ActionEvent event) {
         Scene currentScene = labelTurn.getScene();
 
         chatTF = (TextField) currentScene.lookup("#chatTF");
-        String message = chatTF.getText();
-        System.out.println(this.playerName + "IME IGRACA");
-        ChatRoom room = chatServer.getPrivateChatRoom(this.playerName);
-        room.broadcast(this.playerName, message);
+        labelName = (Label) currentScene.lookup("#labelName");
+        String message = chatTF.getText().trim();
+        String name = labelName.getText().trim();
+
+        if (message.isEmpty()) {
+            // Show an alert if the message is empty
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Empty Message");
+            alert.setHeaderText(null);
+            alert.setContentText("Cannot send an empty message. Please enter some text.");
+            alert.showAndWait();
+            return;
+        }
+
+        sendMessageToRoom(message, name);
+
+        chatTF.clear();
+    }
+
+    private void sendMessageToRoom(String message, String name){
+        ChatClientManager.getInstance().sendMessage("/msg:" + name + ":" + message);
     }
 
     public String returnGuessedLetter() {
@@ -436,6 +462,9 @@ public class Main extends Application {
 
     public void updateChat(String chatMessage) {
         Platform.runLater(() -> {
+            Scene currentScene = labelTurn.getScene();
+            chatLV = (ListView<String>) currentScene.lookup("#chatLV");
+
             chatLV.getItems().add(chatMessage);
         });
     }
@@ -474,5 +503,11 @@ public class Main extends Application {
     }
 
 
+    public String getPlayerName() {
+        return playerName;
+    }
 
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
+    }
 }

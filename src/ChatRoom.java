@@ -1,8 +1,3 @@
-
-
-import java.util.HashSet;
-import java.util.Set;
-
 public class ChatRoom {
     private ChatServer server;
     private final String roomName;
@@ -15,11 +10,10 @@ public class ChatRoom {
         this.server = server;
     }
 
-    public void broadcast(String sender, String message) {
+    public void broadcastRoom(String sender, String message) {
 
-
-            server.sendMessageToUser(userTwo, "/msg" + sender + ":" + message);
-            server.sendMessageToUser(userOne, "/msg" + sender + ":" + message);
+            server.sendMessageToUser(userTwo, "/MSG:" + sender + ":" + message);
+            server.sendMessageToUser(userOne, "/MSG:" + sender + ":" + message);
     }
 
     public void removeUser(UserThread user){
@@ -30,6 +24,8 @@ public class ChatRoom {
         }
     }
 
-
+    public String getRoomName() {
+        return roomName;
+    }
 }
 

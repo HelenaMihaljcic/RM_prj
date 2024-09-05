@@ -1,6 +1,8 @@
 import javafx.application.Platform;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -12,6 +14,8 @@ public final class ChatClient extends Thread {
     private Main main;
     private Socket socket;
     private PrintWriter zaServer;
+    private InputStream streamForMain;
+    private OutputStream outForMain;
 
     public ChatClient(String hostname, int port, Main main, String name) {
         this.hostname = hostname;
@@ -26,13 +30,15 @@ public final class ChatClient extends Thread {
             this.socket = new Socket(this.hostname, this.port);
             zaServer = new PrintWriter(socket.getOutputStream(), true);
             zaServer.println(name);
+            streamForMain = socket.getInputStream();
+            outForMain = socket.getOutputStream();
 
             System.out.println("Connected to the chat server @ " + this.hostname);
 
             // Dispatch threads
             ClientReadThread rt = new ClientReadThread(this.name, socket, main, main.getPrimaryStage());
             rt.start();
-            ClientWriteThread wt = new ClientWriteThread(this.name, socket);
+            ClientWriteThread wt = new ClientWriteThread(this.name, socket, main);
             wt.start();
 
             // Wait for threads, so we can close the socket (try-with-resources)
@@ -83,5 +89,11 @@ public final class ChatClient extends Thread {
         }
     }
 
+    public InputStream getStreamForMain() {
+        return streamForMain;
+    }
 
+    public OutputStream getOutForMain() {
+        return outForMain;
+    }
 }

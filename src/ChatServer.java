@@ -18,6 +18,9 @@ final class ChatServer {
     private static BufferedReader fromUser;
     private static PrintWriter toUser;
     private static ChatServer server = new ChatServer(SERVER_TEST_PORT);
+    private final int port;
+    private  Set<UserThread> users;
+    private Map<String, ChatRoom> privateChatRooms = new HashMap<>();
 
     public static void main(String[] args) {
 
@@ -28,14 +31,11 @@ final class ChatServer {
         server.execute();
     }
 
-    private final int port;
-    private final Set<UserThread> users;
-    private final Map<String, ChatRoom> privateChatRooms;
+
 
     ChatServer(int port) {
         this.port = port;
         this.users = Collections.synchronizedSet(new HashSet<>());
-        this.privateChatRooms = Collections.synchronizedMap(new HashMap<>());
     }
 
 
@@ -87,7 +87,7 @@ final class ChatServer {
     void remove(UserThread user) {
         String username = user.getNickname();
         this.users.remove(user);
-        this.privateChatRooms.values().forEach(chatRoom -> chatRoom.removeUser(user));
+        privateChatRooms.values().forEach(chatRoom -> chatRoom.removeUser(user));
         notifyAllUsers();
         System.err.println("Client disconnected: " + username);
     }
@@ -110,33 +110,12 @@ final class ChatServer {
     }
 
     void createPrivateChatRoom(String roomName, UserThread user1, UserThread user2) {
-        System.out.println(roomName + "IME SOBE");
         ChatRoom chatRoom = new ChatRoom(roomName, user1, user2, this);
         privateChatRooms.put(roomName, chatRoom);
+        System.out.println(privateChatRooms);
         user1.setCurrentChatRoom(chatRoom);
         user2.setCurrentChatRoom(chatRoom);
     }
-
-    ChatRoom getPrivateChatRoom(String roomName) {
-        // Synchronized block to ensure thread safety while accessing the map
-        synchronized (privateChatRooms) {
-            // Iterate through the entries in the map
-            for (Map.Entry<String, ChatRoom> entry : privateChatRooms.entrySet()) {
-                // Check if the key (room name) contains the specified roomName
-                if (entry.getKey().contains(roomName)) {
-                    System.out.println(entry.getKey() + "NEKI KEY " + roomName);
-                    // Return the matching ChatRoom
-                    if(entry.getValue() == null){
-                        System.out.println("NULLLLLAAAA");
-                    }
-                    return entry.getValue();
-                }
-            }
-        }
-        // Return null if no matching room is found
-        return null;
-    }
-
 
     void deletePrivateChatRoom(String roomName) {
         // Synchronized block to ensure thread safety while modifying the map
@@ -207,7 +186,9 @@ final class ChatServer {
 
         if (senderThread != null && receiverThread != null) {
             hangmanGame = new HangmanGame(senderThread, receiverThread, word, this);
-            createPrivateChatRoom(sender + receiver, senderThread, receiverThread);
+            createPrivateChatRoom(sender + ":" + receiver, senderThread, receiverThread);
+
+            System.out.println(privateChatRooms);
             senderThread.setHangmanGame(hangmanGame);
             receiverThread.setHangmanGame(hangmanGame);
             senderThread.setInHangmanGame(true);
@@ -219,6 +200,27 @@ final class ChatServer {
             receiverThread.sendMessage(gameStartMessage);
         }
     }
+
+    public synchronized ChatRoom findChatRoomByPlayer(String playerName) {
+        for (Map.Entry<String, ChatRoom> entry : privateChatRooms.entrySet()) {
+            String[] players = entry.getKey().split(":");
+            if (players[0].equals(playerName) || players[1].equals(playerName)) {
+                return entry.getValue();
+            }
+        }
+        return null; // Ako nije pronađena nijedna soba za tog igrača
+    }
+
+    // Metoda za slanje poruka u sobu
+    public synchronized void handleSendMessageToRoom(String message, String playerName) {
+        ChatRoom room = findChatRoomByPlayer(playerName);
+        if (room != null) {
+            room.broadcastRoom(playerName, message);
+        } else {
+            System.err.println("Chat room not found for player: " + playerName);
+        }
+    }
+
 
 
     public void handleHangmanGuess(String message, UserThread sender) {
@@ -241,4 +243,8 @@ final class ChatServer {
         return server;
     }
 
+    public Map<String, ChatRoom> getPrivateChatRooms() {
+        System.out.println(privateChatRooms);
+        return privateChatRooms;
+    }
 }

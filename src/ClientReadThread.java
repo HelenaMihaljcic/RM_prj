@@ -74,10 +74,17 @@ final class ClientReadThread extends Thread {
                     });
                 } else if (response.contains("NOT TURN")) {
                     main.showNotYourTurnAlert();
-                } else if (response.startsWith("/msg")) {
+                } else if (response.startsWith("/MSG")) {
                     String[] msg = response.split(":");
-                    main.updateChat("["+msg[1]+"]: " + msg[2]);
 
+                    //DIO ZA POGADJANJE RIJECI
+                    if(msg[2].startsWith("/word")){
+
+                        String word = msg[2].substring("/word".length()).trim();
+
+                    }
+
+                    main.updateChat("["+msg[1]+"]: " + msg[2]);
                 } else if (response.startsWith("disableButton ")) {
                     String[] parts = response.split(" ");
                     String letter = parts[1];

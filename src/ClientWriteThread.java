@@ -6,9 +6,11 @@ import java.util.Scanner;
 final class ClientWriteThread extends Thread {
     private final String username;
     private PrintWriter toServer;
+    private Main main;
 
-    ClientWriteThread(String username, Socket socket) {
+    ClientWriteThread(String username, Socket socket, Main main) {
         this.username = username;
+        this.main = main;
         try {
             this.toServer = new PrintWriter(socket.getOutputStream(), true);
         } catch (IOException ex) {
