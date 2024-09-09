@@ -14,6 +14,7 @@ final class ClientReadThread extends Thread {
     private String username;
     private Main main;
     private Stage primaryStage;
+    private String currentWord;
 
     ClientReadThread(String username, Socket socket, Main main, Stage primaryStage) { // Add primaryStage parameter
         this.username = username;
@@ -67,6 +68,7 @@ final class ClientReadThread extends Thread {
                         Platform.runLater(() -> {
                             try {
                                 main.switchToGameScene(category, word, startPlayer);
+                                this.currentWord = word;
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -83,16 +85,32 @@ final class ClientReadThread extends Thread {
                     main.showNotYourTurnAlert();
                 } else if (response.startsWith("/MSG")) {
                     String[] msg = response.split(":");
+                    String player = msg[1];
+                    String message = msg[2];
 
-                    //DIO ZA POGADJANJE RIJECI
-                    if(msg[2].startsWith("/word")){
+                    if (message.startsWith("/word ")) {
+                        String guessedWord = message.substring(6).trim();
+                        Platform.runLater(() -> {
+                            if (guessedWord.equalsIgnoreCase(currentWord)) {
+                                main.updateWordDisplay2(guessedWord);
 
-                        String word = msg[2].substring("/word".length()).trim();
-
+                                if (player.equals(main.getUsername())) {
+                                    int points = guessedWord.length() * 10;
+                                    main.updateScore(player, points);
+                                    main.showEndMessage(player, main.getPlayerScore(player));
+                                }
+                                main.updateChat("Player " + player + " guessed the word: " + guessedWord);
+                            } else {
+                                if (player.equals(main.getUsername())) {
+                                    main.showIncorrectGuessMessage(guessedWord);
+                                }
+                                main.updateChat("Player " + player + " sent the wrong word: " + guessedWord);
+                            }
+                        });
+                    } else {
+                        Platform.runLater(() -> main.updateChat("[" + player + "]: " + message));
                     }
-
-                    main.updateChat("["+msg[1]+"]: " + msg[2]);
-                } else if (response.startsWith("disableButton ")) {
+                }else if (response.startsWith("disableButton ")) {
                     String[] parts = response.split(" ");
                     String letter = parts[1];
                     Platform.runLater(() -> {

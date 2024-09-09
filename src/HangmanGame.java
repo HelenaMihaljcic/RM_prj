@@ -79,15 +79,18 @@ public class HangmanGame {
 
         String word = (player == player1) ? wordForPlayer1 : wordForPlayer2;
 
-        if (guess.equals(word)) {
+        if (guess.equalsIgnoreCase(word)) { // Ignore case sensitivity
             gameEnded = true;
             String winner = player.getNickname();
             String loser = (player == player1) ? player2.getNickname() : player1.getNickname();
+
             notifyPlayers("end WIN " + winner + " " + loser);
         } else {
-            notifyPlayers("end LOSS");
+            notifyPlayers("end LOSS " + player.getNickname() + " " + guess);
+            switchTurn();
         }
     }
+
 
     private boolean playerTurn(UserThread player) {
         return (player == player1 && player1Turn) || (player == player2 && !player1Turn);

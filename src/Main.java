@@ -328,6 +328,7 @@ public class Main extends Application {
         ChatClientManager.getInstance().sendMessage("/letter " + guessedLetter); //salje serveru!
     }
 
+    //za slovo update
     public void updateWordDisplay(String guessedLetter) {
         char guessedChar = guessedLetter.charAt(0);
         int occurrences = 0;
@@ -349,6 +350,44 @@ public class Main extends Application {
             updateScore(getUsername(), 10 * occurrences);  // Dodaj 10 poena za svako pojavljivanje slova
         }
     }
+
+
+    public void updateWordDisplay2(String guessedWord) {
+        if (guessedWord.equalsIgnoreCase(word)) {
+            Platform.runLater(() -> {
+                //System.out.println("Reč je pogođena: " + guessedWord);
+                for (int i = 0; i < word.length(); i++) {
+                    char currentChar = word.charAt(i);
+                    String key = findLabelKey(i);
+                    if (key != null) {
+                        Label label = crticeMap.get(key);
+                        if (label != null) {
+                            label.setText(String.valueOf(currentChar));
+                        } else {
+                            System.out.println("Labela za ključ " + key + " nije pronađena.");
+                        }
+                    } else {
+                        System.out.println("Ključ za indeks " + i + " nije pronađen.");
+                    }
+                }
+            });
+        }
+    }
+
+
+    public void updateScore2(String player, int bodovi) {
+        Scene currentScene = primaryStage.getScene();
+
+        Label scoreLabel = (Label) currentScene.lookup("#labelScore");
+
+        int currentScore = getPlayerScore(player);
+        int newScore = currentScore + bodovi;
+        playerScores.put(player, newScore); // Pretpostavka da je ovo mapa sa rezultatima igrača
+        //System.out.println("Igrač: " + player + " novi rezultat: " + newScore);
+        Platform.runLater(() -> scoreLabel.setText(String.valueOf(newScore)));
+    }
+
+
 
 
     private String findLabelKey(int index) {
@@ -476,6 +515,8 @@ public class Main extends Application {
         return dugme;
     }
 
+
+
     public void updateScore(String player, int scoreChange) {
         Scene currentScene = primaryStage.getScene();
 
@@ -510,4 +551,5 @@ public class Main extends Application {
     public void setPlayerName(String playerName) {
         this.playerName = playerName;
     }
+
 }
