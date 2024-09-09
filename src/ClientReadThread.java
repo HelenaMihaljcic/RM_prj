@@ -103,6 +103,7 @@ final class ClientReadThread extends Thread {
                             } else {
                                 if (player.equals(main.getUsername())) {
                                     main.showIncorrectGuessMessage(guessedWord);
+                                    main.updateScore(player, -5);
                                 }
                                 main.updateChat("Player " + player + " sent the wrong word: " + guessedWord);
                             }

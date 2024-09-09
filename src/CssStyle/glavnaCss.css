@@ -33,7 +33,7 @@
 
 .list-view {
     -fx-background-color: transparent;
-    -fx-text-fill: #fff; /* Bijeli tekst */
+    -fx-text-fill: white;
     -fx-border-color: gray;
     -fx-border-width: 3px;
     -fx-font-family: 'Dialog';
@@ -42,11 +42,15 @@
 }
 
 .list-view .list-cell:even {
-    -fx-background-color:  gray;
+    -fx-background-color: rgba(0, 0, 0, 0.564);
+    -fx-text-fill: white;
+
 }
 
 .list-view .list-cell:odd{
-    -fx-background-color: black;
+    -fx-background-color: rgba(128, 128, 128, 0.725);
+    -fx-text-fill: white;
+
 }
 
 
